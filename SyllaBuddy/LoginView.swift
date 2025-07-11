@@ -15,13 +15,16 @@ class LoginView: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var password: UITextField!
     let loginId = "loginSegue"
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         email.delegate = self
         password.delegate = self
-        
-        //password.isSecureTextEntry = true
+        password.isSecureTextEntry = true
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        self.email.text = ""
+        self.password.text = ""
     }
     
     @IBAction func loginPressed(_ sender: Any) {
@@ -41,19 +44,12 @@ class LoginView: UIViewController, UITextFieldDelegate {
             if let error = error as NSError? {
                 var message = "\(error.localizedDescription)"
                 if(message.contains("malformed")) {
-                    if(pass.count < 6) {
-                        message = "Password must be at least 6 characters"
-                    } else {
-                        message = "Incorrect username or password"
-                    }
-                    
+                    message = "Incorrect username or password"
                 }
                 print(message)
                 self.makePopup(popupTitle: "Login Error", popupMessage: message)
             } else {
                 self.performSegue(withIdentifier: self.loginId, sender: self)
-                self.email.text = ""
-                self.password.text = ""
             }
         }
         
@@ -75,14 +71,14 @@ class LoginView: UIViewController, UITextFieldDelegate {
     }
     
     func textFieldShouldReturn(_ textField:UITextField) -> Bool {
-            textField.resignFirstResponder()
-            return true
-        }
+        textField.resignFirstResponder()
+        return true
+    }
         
-        // Called when the user clicks on the view outside of the UITextField
+    // Called when the user clicks on the view outside of the UITextField
 
-        override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-            self.view.endEditing(true)
-        }
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
+    }
 
 }

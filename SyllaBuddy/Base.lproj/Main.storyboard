@@ -202,7 +202,7 @@ Account</string>
                                     </attributedString>
                                 </buttonConfiguration>
                                 <connections>
-                                    <segue destination="XcD-RR-jHR" kind="show" identifier="CreateSegue" id="sek-Fj-1A6"/>
+                                    <action selector="accountCreation:" destination="tTn-SK-VjD" eventType="touchUpInside" id="HcM-nj-Xaj"/>
                                 </connections>
                             </button>
                             <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="University" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="TQ3-d2-tN0">
@@ -235,10 +235,18 @@ Account</string>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="uwx-qE-gDr"/>
+                    <connections>
+                        <outlet property="confirm" destination="7S1-RC-gyM" id="btc-XA-u3r"/>
+                        <outlet property="email" destination="ibk-jo-A35" id="mw8-Mg-y1G"/>
+                        <outlet property="password" destination="uwN-hL-e2K" id="BQY-L0-U8B"/>
+                        <outlet property="uni" destination="TQ3-d2-tN0" id="jAD-it-Q85"/>
+                        <outlet property="user" destination="HkC-dy-NJH" id="aRx-na-4UK"/>
+                        <segue destination="XcD-RR-jHR" kind="show" identifier="CreateSegue" id="KTb-eJ-TYW"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="oN6-MJ-kGV" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1840.4580152671756" y="-27.464788732394368"/>
+            <point key="canvasLocation" x="1899" y="-28"/>
         </scene>
         <!--Calendar View-->
         <scene sceneID="VBB-Q1-lmJ">
@@ -285,7 +293,7 @@ Account</string>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="8cN-To-FRS"/>
+        <segue reference="KTb-eJ-TYW"/>
     </inferredMetricsTieBreakers>
     <resources>
         <systemColor name="lightTextColor">

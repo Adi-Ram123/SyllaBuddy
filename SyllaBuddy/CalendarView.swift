@@ -11,7 +11,7 @@ class CalendarView: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        //self.navigationItem.setHidesBackButton(true, animated: false) //Hide and disable nav bar
+        self.navigationItem.setHidesBackButton(true, animated: false) //Hide and disable nav bar
 
         // Do any additional setup after loading the view.
     }
