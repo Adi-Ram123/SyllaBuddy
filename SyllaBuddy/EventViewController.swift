@@ -6,13 +6,17 @@
 //
 
 import UIKit
+import FirebaseAuth
+import FirebaseFirestore
 
 class EventViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     
+    @IBOutlet weak var eventFound: UILabel!
     @IBOutlet weak var tableView: UITableView!
-    var delegate: PDFViewController!
+    var delegate: CalendarEventView!
     var eventList: [Event]!
+    let db = Firestore.firestore()
     
     let cellId = "eventCell"
     
@@ -72,7 +76,48 @@ class EventViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     
     @IBAction func confirmPressed(_ sender: Any) {
+        
+        //Determine which document to update
+        let userEmail = Auth.auth().currentUser!.email
+        print(userEmail!)
+        
+        let eventDictionaries = eventList.map { $0.toDictionary() }
+        
+        //I will have direct access to class with label but for now do this
+        guard let className = eventDictionaries.first?["class"] else {
+            print("No class found in first event.")
+            return
+        }
+        
+        let collection = db.collection("User")
+        
+        collection.whereField("Email", isEqualTo: userEmail!).getDocuments
+        {
+            (querySnapshot, error) in
+                if let error = error {
+                    print("Error querying user: \(error.localizedDescription)")
+                } else if let documents = querySnapshot?.documents, !documents.isEmpty {
+                    let userDoc = documents[0]
+                    let docRef = collection.document(userDoc.documentID)
+                    
+                    //Update the document
+                    docRef.updateData(["Events": FieldValue.arrayUnion(eventDictionaries),
+                                       "Classes": FieldValue.arrayUnion([className])])
+                    {
+                        error in
+                        if let error = error {
+                            print("Error updating events: \(error.localizedDescription)")
+                        } else {
+                            print("Events successfully added.")
+                            let tableVC = self.delegate as! EventReloader
+                            tableVC.reloadData()
+                        }
+                    }
+                }
+        }
+        
         self.dismiss(animated: true)
+        
     }
     
 
