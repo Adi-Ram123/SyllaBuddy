@@ -40,10 +40,6 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
         present(picker, animated: true)
     }
     
-    
-    
-    
-    
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let selectedURL = urls.first else { return }
         // Load PDF document
@@ -113,6 +109,46 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
         cell.textLabel!.text = eventList[indexPath.row].event
         cell.detailTextLabel!.text = "\(eventList[indexPath.row].eventClass)\n\(eventList[indexPath.row].date)"
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            eventList.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .fade)
+            
+            let userEmail = Auth.auth().currentUser!.email
+            let collection = db.collection("User")
+            collection.whereField("Email", isEqualTo: userEmail!).getDocuments {
+                (querySnapshot, error) in
+                if let error = error {
+                    print("Error finding user document: \(error.localizedDescription)")
+                    return
+                }
+                
+                guard let document = querySnapshot?.documents.first else {
+                    print("No user document found")
+                    return
+                }
+                
+                let docRef = document.reference
+                let eventDictArray = self.eventList.map { event in
+                    return [
+                        "event": event.event,
+                        "date": event.date,
+                        "class": event.eventClass
+                    ]
+                }
+                docRef.updateData(["Events": eventDictArray]) {
+                    error in
+                    if let error = error {
+                        print("Error updating Events in Firestore: \(error.localizedDescription)")
+                    } else {
+                        print("Successfully updated Events array in Firestore.")
+                    }
+                }
+                self.reloadData()
+            }
+        }
     }
     
     func reloadData() {
