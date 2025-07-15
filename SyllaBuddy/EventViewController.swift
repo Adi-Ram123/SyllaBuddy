@@ -23,9 +23,16 @@ class EventViewController: UIViewController, UITableViewDelegate, UITableViewDat
     override func viewDidLoad() {
         tableView.delegate = self
         tableView.dataSource = self
+        
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        let tableVC = self.delegate as! EventReloader
+        tableVC.reloadData()
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -55,8 +62,9 @@ class EventViewController: UIViewController, UITableViewDelegate, UITableViewDat
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         
         alert.addAction(UIAlertAction(title: "Edit", style: .default, handler: { _ in
-            guard let updatedTitle = alert.textFields?[0].text,
-                  let updatedDate = alert.textFields?[1].text else { return }
+            guard let updatedTitle = alert.textFields?[0].text?.trimmingCharacters(in: .whitespacesAndNewlines),
+                  let updatedDate = alert.textFields?[1].text?.trimmingCharacters(in: .whitespacesAndNewlines),
+                  !updatedTitle.isEmpty, !updatedDate.isEmpty else { return }
             
             self.eventList[indexPath.row].event = updatedTitle
             self.eventList[indexPath.row].date = updatedDate
@@ -76,7 +84,6 @@ class EventViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     
     @IBAction func confirmPressed(_ sender: Any) {
-        
         //Determine which document to update
         let userEmail = Auth.auth().currentUser!.email
         print(userEmail!)

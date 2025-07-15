@@ -5,6 +5,9 @@
 //  Created by Aditya Ramaswamy on 7/12/25.
 //
 
+
+//FIX THE EVENTLIST TRANSFER. DONT TRANSFER EVERYTHING ONLY THE ONES FOUND IN PDF UPLOAD
+
 import UIKit
 import UniformTypeIdentifiers
 import PDFKit
@@ -41,8 +44,87 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
         reloadData()
     }
     
+    @IBAction func createEvent(_ sender: Any) {
+        let sheet = UIAlertController(title: "Add Event", message: "Choose how to add an event", preferredStyle: .actionSheet)
+        let manual = UIAlertAction(title: "Add Manually", style: .default) {
+            (action) in
+            print("Manual selected")
+            let alert = UIAlertController(title: "Add Event", message: nil, preferredStyle: .alert)
+            
+            alert.addTextField { textField in
+                textField.placeholder = "Class"
+            }
+            
+            alert.addTextField { textField in
+                textField.placeholder = "Event"
+            }
+            
+            alert.addTextField { textField in
+                textField.placeholder = "Date"
+            }
+            
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+            
+            alert.addAction(UIAlertAction(title: "Add", style: .default, handler: { _ in
+                guard let newClass = alert.textFields?[0].text?.trimmingCharacters(in: .whitespacesAndNewlines),
+                      let newEvent = alert.textFields?[1].text?.trimmingCharacters(in: .whitespacesAndNewlines),
+                      let newDate = alert.textFields?[2].text?.trimmingCharacters(in: .whitespacesAndNewlines),
+                      !newClass.isEmpty, !newEvent.isEmpty, !newDate.isEmpty else {return}
+
+                
+                let addEvent = Event(date: newDate, event: newEvent, eventClass: newClass)
+                self.eventList.append(addEvent)
+                
+                //Determine which document to update
+                let userEmail = Auth.auth().currentUser!.email
+                print(userEmail!)
+                
+                let eventDictionaries = self.eventList.map { $0.toDictionary() }
+                
+                let className = newClass
+                
+                let collection = self.db.collection("User")
+                
+                collection.whereField("Email", isEqualTo: userEmail!).getDocuments
+                {
+                    (querySnapshot, error) in
+                        if let error = error {
+                            print("Error querying user: \(error.localizedDescription)")
+                        } else if let documents = querySnapshot?.documents, !documents.isEmpty {
+                            let userDoc = documents[0]
+                            let docRef = collection.document(userDoc.documentID)
+                            
+                            //Update the document
+                            docRef.updateData(["Events": FieldValue.arrayUnion(eventDictionaries),
+                                               "Classes": FieldValue.arrayUnion([className])])
+                            {
+                                error in
+                                if let error = error {
+                                    print("Error updating events: \(error.localizedDescription)")
+                                } else {
+                                    print("Events successfully added.")
+                                    self.reloadData()
+                                }
+                            }
+                        }
+                }
+            }))
+            
+            self.present(alert, animated: true, completion: nil)
+        }
+        let upload = UIAlertAction(title: "Upload PDF", style: .default) {
+            (action) in
+            print("Upload selected")
+            self.pdfUpload()
+        }
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel)
+        sheet.addAction(manual)
+        sheet.addAction(upload)
+        sheet.addAction(cancel)
+        present(sheet, animated: true)
+    }
     
-    @IBAction func pdfUpload(_ sender: Any) {
+    func pdfUpload() {
         let supportedTypes: [UTType] = [UTType.pdf]
         let picker = UIDocumentPickerViewController(forOpeningContentTypes: supportedTypes, asCopy: true)
         picker.delegate = self
@@ -63,13 +145,19 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
             }
             print("Extracted PDF text:\n\(fullText)")
             let pairs = extractEventDatePairs(from: fullText)
+            if pairs.isEmpty {
+                // No events found - show alert and do not segue
+                let alert = UIAlertController(title: "No Events Found", message: "No events were found in the syllabus", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                present(alert, animated: true)
+                return
+            }
             for (date, event) in pairs {
                 print("Date: \(date)\tEvent: \(event)")
                 let event = Event(date: date, event: event, eventClass: "CS371")
                 eventList.append(event)
             }
             performSegue(withIdentifier: confirmSegue, sender: self)
-                    
         } else {
             print("Failed to load PDF document.")
         }
@@ -162,6 +250,7 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
         }
     }
     
+    //Add something where you check to see if the user still has events in the classes field. If not remove the class
     func reloadData() {
         eventList = [Event]()
         if let user = Auth.auth().currentUser {

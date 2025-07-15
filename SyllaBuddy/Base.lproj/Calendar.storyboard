@@ -16,14 +16,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="402" height="874"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="Event List" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bPh-0a-rnb">
-                                <rect key="frame" x="144" y="188" width="114.33333333333331" height="29.333333333333343"/>
-                                <fontDescription key="fontDescription" name="ArialMT" family="Arial" pointSize="26"/>
-                                <color key="textColor" red="0.51397526260000004" green="0.38454622030000002" blue="0.2591000497" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="ePE-AK-dg7">
-                                <rect key="frame" x="0.0" y="237.33333333333334" width="402" height="459.66666666666663"/>
+                                <rect key="frame" x="0.0" y="168" width="402" height="606"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="eventId" textLabel="3hS-9a-Wyh" detailTextLabel="eHC-cQ-u5b" style="IBUITableViewCellStyleValue2" id="Ejc-4a-0Qt">
@@ -52,42 +46,40 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
-                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" alignment="center" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="Pmp-Sq-Li3">
-                                <rect key="frame" x="0.0" y="717" width="402" height="40"/>
-                                <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="r1N-8X-dW2">
-                                        <rect key="frame" x="0.0" y="3" width="191" height="34.333333333333336"/>
-                                        <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="plain" title="Add"/>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jWJ-sG-tDN">
-                                        <rect key="frame" x="211" y="3" width="191" height="34.333333333333336"/>
-                                        <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="plain" title="Upload"/>
-                                        <connections>
-                                            <action selector="pdfUpload:" destination="T0l-HH-uvk" eventType="touchUpInside" id="rZw-ax-bfl"/>
-                                        </connections>
-                                    </button>
-                                </subviews>
-                            </stackView>
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dU1-2D-AZy">
+                                <rect key="frame" x="0.0" y="774" width="402" height="100"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="100" id="lgx-wT-3cN"/>
+                                </constraints>
+                                <items>
+                                    <barButtonItem title="Calendar" id="2Ey-FS-QFb"/>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="MAZ-IO-9l4"/>
+                                    <barButtonItem title="Community" id="7QS-cE-GPL"/>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="Cb5-yw-uWY"/>
+                                    <barButtonItem title="Settings" id="wIY-t8-rAU"/>
+                                </items>
+                            </toolbar>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="KBi-Zc-Mj3"/>
                         <color key="backgroundColor" red="1" green="0.82789456839999997" blue="0.5261248946" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="Pmp-Sq-Li3" firstAttribute="top" secondItem="ePE-AK-dg7" secondAttribute="bottom" constant="20" id="0dM-lM-gzi"/>
-                            <constraint firstItem="Pmp-Sq-Li3" firstAttribute="leading" secondItem="KBi-Zc-Mj3" secondAttribute="leading" id="3yF-iQ-aOf"/>
-                            <constraint firstItem="bPh-0a-rnb" firstAttribute="top" secondItem="KBi-Zc-Mj3" secondAttribute="top" constant="20" id="DmL-P9-ZLc"/>
-                            <constraint firstItem="KBi-Zc-Mj3" firstAttribute="trailing" secondItem="Pmp-Sq-Li3" secondAttribute="trailing" id="FBJ-C0-Km3"/>
-                            <constraint firstItem="KBi-Zc-Mj3" firstAttribute="bottom" secondItem="Pmp-Sq-Li3" secondAttribute="bottom" id="Fvn-EI-XPa"/>
-                            <constraint firstItem="ePE-AK-dg7" firstAttribute="leading" secondItem="KBi-Zc-Mj3" secondAttribute="leading" id="H9b-LB-lFs"/>
-                            <constraint firstItem="KBi-Zc-Mj3" firstAttribute="bottom" secondItem="ePE-AK-dg7" secondAttribute="bottom" constant="60" id="bJC-Pn-ZzM"/>
-                            <constraint firstItem="ePE-AK-dg7" firstAttribute="top" secondItem="bPh-0a-rnb" secondAttribute="bottom" constant="20" id="mVU-u0-9sw"/>
-                            <constraint firstItem="bPh-0a-rnb" firstAttribute="centerX" secondItem="o1M-aG-J6S" secondAttribute="centerX" id="san-Vg-SJ1"/>
-                            <constraint firstItem="KBi-Zc-Mj3" firstAttribute="trailing" secondItem="ePE-AK-dg7" secondAttribute="trailing" id="tJ2-aW-j50"/>
+                            <constraint firstItem="ePE-AK-dg7" firstAttribute="leading" secondItem="KBi-Zc-Mj3" secondAttribute="leading" id="6H7-TN-dTD"/>
+                            <constraint firstItem="dU1-2D-AZy" firstAttribute="top" secondItem="ePE-AK-dg7" secondAttribute="bottom" id="G1d-GK-dNE"/>
+                            <constraint firstItem="ePE-AK-dg7" firstAttribute="top" secondItem="KBi-Zc-Mj3" secondAttribute="top" id="IIA-2M-dQg"/>
+                            <constraint firstItem="dU1-2D-AZy" firstAttribute="leading" secondItem="o1M-aG-J6S" secondAttribute="leading" id="KQl-8T-JH9"/>
+                            <constraint firstItem="ePE-AK-dg7" firstAttribute="trailing" secondItem="KBi-Zc-Mj3" secondAttribute="trailing" id="SpY-1N-bOY"/>
+                            <constraint firstAttribute="bottom" secondItem="dU1-2D-AZy" secondAttribute="bottom" id="hF6-mw-Iuc"/>
+                            <constraint firstAttribute="trailing" secondItem="dU1-2D-AZy" secondAttribute="trailing" id="qJx-OU-zzI"/>
                         </constraints>
                     </view>
                     <toolbarItems/>
-                    <navigationItem key="navigationItem" title="Calendar" id="Uce-SQ-mEV"/>
+                    <navigationItem key="navigationItem" title="Calendar" id="Uce-SQ-mEV">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="iUg-0C-hpm">
+                            <connections>
+                                <action selector="createEvent:" destination="T0l-HH-uvk" id="C45-gL-dOW"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="tableView" destination="ePE-AK-dg7" id="DVy-yQ-5dA"/>
