@@ -27,12 +27,22 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
         super.viewDidLoad()
         tableView.delegate = self
         tableView.dataSource = self
+        self.navigationItem.hidesBackButton = true
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        appearance.titleTextAttributes = [
+            .foregroundColor: UIColor(red: 0.514, green: 0.384, blue: 0.259, alpha: 1.0),
+            .font: UIFont(name: "Arial", size: 26.0)!
+        ]
+            
+            
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
         reloadData()
     }
     
     
     @IBAction func pdfUpload(_ sender: Any) {
-        eventList = [Event]()
         let supportedTypes: [UTType] = [UTType.pdf]
         let picker = UIDocumentPickerViewController(forOpeningContentTypes: supportedTypes, asCopy: true)
         picker.delegate = self
@@ -144,15 +154,23 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
                         print("Error updating Events in Firestore: \(error.localizedDescription)")
                     } else {
                         print("Successfully updated Events array in Firestore.")
+                        self.reloadData()
                     }
                 }
-                self.reloadData()
+                
             }
         }
     }
     
     func reloadData() {
         eventList = [Event]()
+        if let user = Auth.auth().currentUser {
+            // User is signed in
+            print("User is signed in with email: \(user.email ?? "No Email")")
+        } else {
+            // No user is signed in
+            print("No user is currently signed in.")
+        }
         let userEmail = Auth.auth().currentUser!.email
         print(userEmail!)
         

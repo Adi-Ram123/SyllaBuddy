@@ -24,7 +24,7 @@ class CreateAccountView: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var uni: UITextField!
     let db = Firestore.firestore()
     
-    let createId = "CreateSegue"
+    let createId = "createSegue"
     
     override func viewDidLoad() {
         super.viewDidLoad()

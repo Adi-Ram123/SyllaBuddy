@@ -20,6 +20,13 @@ class LoginView: UIViewController, UITextFieldDelegate {
         email.delegate = self
         password.delegate = self
         password.isSecureTextEntry = true
+        if let user = Auth.auth().currentUser {
+            // User is signed in
+            print("User is signed in with email: \(user.email ?? "No Email")")
+        } else {
+            // No user is signed in
+            print("No user is currently signed in.")
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -49,6 +56,7 @@ class LoginView: UIViewController, UITextFieldDelegate {
                 print(message)
                 self.makePopup(popupTitle: "Login Error", popupMessage: message)
             } else {
+                print("Succesful login with email: \(mail)")
                 self.performSegue(withIdentifier: self.loginId, sender: self)
             }
         }
