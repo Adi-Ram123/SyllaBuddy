@@ -18,54 +18,48 @@
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="hK5-t4-dBt">
                                 <rect key="frame" x="0.0" y="168" width="440" height="162.66666666666663"/>
                                 <subviews>
-                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kVP-KZ-OYH">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gm3-KL-6pL">
                                         <rect key="frame" x="0.0" y="0.0" width="440" height="60"/>
-                                        <subviews>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gm3-KL-6pL">
-                                                <rect key="frame" x="0.0" y="0.0" width="440" height="60"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="60" id="8IU-VL-Fkn"/>
-                                                </constraints>
-                                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="plain" title="Account Settings">
-                                                    <fontDescription key="titleFontDescription" type="system" pointSize="24"/>
-                                                </buttonConfiguration>
-                                            </button>
-                                        </subviews>
-                                    </stackView>
-                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nH4-oh-kWB">
-                                        <rect key="frame" x="0.0" y="60" width="440" height="60"/>
-                                        <subviews>
-                                            <button opaque="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="751" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lwM-pu-vvt">
-                                                <rect key="frame" x="0.0" y="0.0" width="440" height="60"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="60" id="Sdq-yK-OWK"/>
-                                                </constraints>
-                                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="plain" title="Notification Settings">
-                                                    <fontDescription key="titleFontDescription" type="system" pointSize="24"/>
-                                                </buttonConfiguration>
-                                            </button>
-                                        </subviews>
-                                    </stackView>
-                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="33H-JA-K4C">
-                                        <rect key="frame" x="0.0" y="120.00000000000001" width="440" height="42.666666666666671"/>
-                                        <subviews>
-                                            <button opaque="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="752" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aA9-Z8-h5S">
-                                                <rect key="frame" x="0.0" y="0.0" width="440" height="42.666666666666657"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="60" id="RcO-cT-eK1"/>
-                                                </constraints>
-                                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="plain" title="App Settings">
-                                                    <fontDescription key="titleFontDescription" type="system" pointSize="24"/>
-                                                </buttonConfiguration>
-                                            </button>
-                                        </subviews>
-                                    </stackView>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="60" id="8IU-VL-Fkn"/>
+                                        </constraints>
+                                        <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Account Settings">
+                                            <fontDescription key="titleFontDescription" type="system" pointSize="24"/>
+                                        </buttonConfiguration>
+                                        <connections>
+                                            <segue destination="WCy-8E-CMV" kind="show" identifier="AccountSettingsSegueIdentifier" id="yRX-jB-7wv"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lwM-pu-vvt">
+                                        <rect key="frame" x="0.0" y="60" width="440" height="42.666666666666657"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="60" id="Sdq-yK-OWK"/>
+                                        </constraints>
+                                        <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Notification Settings">
+                                            <fontDescription key="titleFontDescription" type="system" pointSize="24"/>
+                                        </buttonConfiguration>
+                                        <connections>
+                                            <segue destination="H3m-A7-1Q2" kind="show" identifier="NotificationSettingsSegueIdentifier" id="jec-LV-esx"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aA9-Z8-h5S">
+                                        <rect key="frame" x="0.0" y="102.66666666666669" width="440" height="60"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="60" id="RcO-cT-eK1"/>
+                                        </constraints>
+                                        <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="App Settings">
+                                            <fontDescription key="titleFontDescription" type="system" pointSize="24"/>
+                                        </buttonConfiguration>
+                                        <connections>
+                                            <segue destination="vTW-vq-Wz3" kind="show" identifier="AppSettingsSegueIdentifier" id="IS8-qO-XbL"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                             </stackView>
                         </subviews>
@@ -94,6 +88,7 @@
                         <viewLayoutGuide key="safeArea" id="oCW-lA-FQC"/>
                         <color key="backgroundColor" red="1" green="0.82789456839999997" blue="0.5261248946" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </view>
+                    <navigationItem key="navigationItem" id="YKY-w6-UpV"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="8XR-oJ-Y1L" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -109,6 +104,7 @@
                         <viewLayoutGuide key="safeArea" id="qlo-8e-3Zr"/>
                         <color key="backgroundColor" red="1" green="0.82789456839999997" blue="0.5261248946" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </view>
+                    <navigationItem key="navigationItem" id="pEF-Z1-yL5"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6Uf-Vd-7td" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -124,6 +120,7 @@
                         <viewLayoutGuide key="safeArea" id="d3x-oe-pGb"/>
                         <color key="backgroundColor" red="1" green="0.82789456839999997" blue="0.5261248946" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </view>
+                    <navigationItem key="navigationItem" id="H7u-UZ-rH7"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="OPt-DX-Jeb" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
