@@ -5,8 +5,6 @@
 //  Created by Aditya Ramaswamy on 7/12/25.
 //
 
-
-// Add events when pdf is uploaded
 // Add UICalendar
 // If date selected show only events at the date
 // Implement grid view
@@ -24,7 +22,13 @@ protocol EventReloader {
     func reloadData()
 }
 
-class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableViewDelegate, UITableViewDataSource, EventReloader {
+protocol EventHandler {
+    func createCalendarEvent(title: String, date: String)
+}
+
+class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableViewDelegate, UITableViewDataSource, EventReloader, EventHandler, UICalendarSelectionSingleDateDelegate, UICalendarViewDelegate {
+    
+    
     
     @IBOutlet weak var tableView: UITableView!
     let confirmSegue = "eventConfirmSegue"
@@ -48,7 +52,34 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
         ]
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        
+        createCalendar()
+        
+        
         reloadData()
+    }
+    
+    func createCalendar() {
+        let calendarView = UICalendarView()
+        calendarView.translatesAutoresizingMaskIntoConstraints = false
+        
+        calendarView.calendar = .current
+        calendarView.locale = .current
+        calendarView.fontDesign = .rounded
+        calendarView.delegate = self
+        
+        view.addSubview(calendarView)
+        
+        NSLayoutConstraint.activate([
+            calendarView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
+            calendarView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
+            calendarView.heightAnchor.constraint(equalToConstant: 300),
+            calendarView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
+        ])
+    }
+    
+    func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate dateComponents: DateComponents?) {
+        return
     }
 
     
@@ -184,6 +215,7 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
             }
             for (date, event) in pairs {
                 print("Date: \(date)\tEvent: \(event)")
+                //Change this
                 let event = Event(date: date, event: event, eventClass: "CS371")
                 pdfList.append(event)
                 print("pdfList append")

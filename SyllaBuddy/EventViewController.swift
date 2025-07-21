@@ -21,10 +21,10 @@ class EventViewController: UIViewController, UITableViewDelegate, UITableViewDat
     let cellId = "eventCell"
     
     override func viewDidLoad() {
+        super.viewDidLoad()
         tableView.delegate = self
         tableView.dataSource = self
-        
-        super.viewDidLoad()
+        eventFound.text = "\(eventList.count) events found in \(eventList[0].eventClass)"
 
         // Do any additional setup after loading the view.
     }
@@ -90,7 +90,7 @@ class EventViewController: UIViewController, UITableViewDelegate, UITableViewDat
         
         let eventDictionaries = eventList.map { $0.toDictionary() }
         
-        //I will have direct access to class with label but for now do this
+        //I will have direct access to class with label but for now do this also update the label when I integrate
         guard let className = eventDictionaries.first?["class"] else {
             print("No class found in first event.")
             return
@@ -118,6 +118,16 @@ class EventViewController: UIViewController, UITableViewDelegate, UITableViewDat
                             print("Events successfully added.")
                             let tableVC = self.delegate as! EventReloader
                             tableVC.reloadData()
+                            
+                            //create calendar events
+                            let calendarVC = self.delegate as! EventHandler
+                            self.eventList.forEach {
+                                event in
+                                calendarVC.createCalendarEvent(title: event.event, date: event.date)
+                                print("Event added to calendar")
+                            }
+                            
+                            
                         }
                     }
                 }
