@@ -37,6 +37,7 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
     var calendarView: UICalendarView!
     let confirmSegue = "eventConfirmSegue"
     let eventId = "eventId"
+    let gridSegue = "gridViewSegue"
     var eventList: [Event]!
     var displayedEvents: [Event]!
     var pdfList: [Event]!
@@ -576,6 +577,11 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
         if segue.identifier == confirmSegue, let nextVC = segue.destination as? EventViewController {
             nextVC.delegate = self
             nextVC.eventList = pdfList
+        }
+        
+        if segue.identifier == gridSegue, let nextVC = segue.destination as? GridView {
+            nextVC.delegate = self
+            nextVC.eventList = eventList
         }
     }
     
