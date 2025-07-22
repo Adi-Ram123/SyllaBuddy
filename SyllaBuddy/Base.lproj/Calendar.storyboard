@@ -59,7 +59,11 @@
                                         <items>
                                             <barButtonItem title="Calendar" id="2Ey-FS-QFb"/>
                                             <barButtonItem style="plain" systemItem="flexibleSpace" id="MAZ-IO-9l4"/>
-                                            <barButtonItem title="Community" id="7QS-cE-GPL"/>
+                                            <barButtonItem title="Community" id="7QS-cE-GPL">
+                                                <connections>
+                                                    <segue destination="Jul-Ke-0ga" kind="show" id="GyN-zS-dY3"/>
+                                                </connections>
+                                            </barButtonItem>
                                             <barButtonItem style="plain" systemItem="flexibleSpace" id="Cb5-yw-uWY"/>
                                             <barButtonItem title="Settings" id="wIY-t8-rAU"/>
                                         </items>
@@ -97,6 +101,16 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="LMs-t7-9sv" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3076" y="588"/>
+        </scene>
+        <!--communityId-->
+        <scene sceneID="D2d-X4-nvN">
+            <objects>
+                <viewControllerPlaceholder storyboardName="CommunityPage" referencedIdentifier="communityId" id="Jul-Ke-0ga" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="zx6-Hy-xJL"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="A0d-RC-c0y" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2934" y="1014"/>
         </scene>
         <!--Event View Controller-->
         <scene sceneID="agu-mW-M0F">
