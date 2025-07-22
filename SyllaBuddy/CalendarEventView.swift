@@ -100,7 +100,6 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
     @objc func hamburgerPressed() {
         toggleOn = !toggleOn
         print("Toggle Pressed")
-
                 if toggleOn {
                     // Collapse calendar: set height to zero
                     calendarHeightConstraint.constant = 0
@@ -108,6 +107,8 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
                     hamburgerButton.layer.borderWidth = 2
                     hamburgerButton.layer.cornerRadius = 4
                     hamburgerButton.clipsToBounds = true
+                    displayedEvents = eventList
+                    reloadData()
                 } else {
                     // Expand calendar: restore natural height
                     calendarHeightConstraint.constant = calendarNaturalHeight!
@@ -115,6 +116,19 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
                     hamburgerButton.layer.borderWidth = 0
                     hamburgerButton.layer.cornerRadius = 0
                     hamburgerButton.clipsToBounds = false
+                    
+                    //Look back at date formatter method potentially
+                    let today = Date()
+                    let formatter = DateFormatter()
+                    formatter.dateFormat = "MM-dd-yyyy"
+                    formatter.locale = Locale(identifier: "en_US_POSIX")
+                    formatter.timeZone = TimeZone.current
+                    let todayString = formatter.string(from: today)
+                    reloadDisplayData(dateString: todayString)
+                    let calendarDate = Calendar.current.dateComponents([.year, .month, .day], from: today)
+                    if let selection = calendarView.selectionBehavior as? UICalendarSelectionSingleDate {
+                        selection.setSelected(calendarDate, animated: true)
+                    }
                 }
 
                 // Animate the height change
@@ -189,8 +203,10 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.timeZone = TimeZone.current
         let todayString = formatter.string(from: today)
-        reloadDisplayData(dateString: todayString)
-        
+        if let selection = calendarView.selectionBehavior as? UICalendarSelectionSingleDate {
+            let todayComponents = Calendar.current.dateComponents([.year, .month, .day], from: today)
+            selection.setSelected(todayComponents, animated: false)
+        }
             
         container.addSubview(calendarView)
             
@@ -499,7 +515,9 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
                         print(myEvent.event)
                     }
                 }
-                
+                if(self.toggleOn) {
+                    self.displayedEvents = self.eventList
+                }
                 self.tableView.reloadData()
                 print("Final event list: \(self.eventList!)")
             }
@@ -546,16 +564,18 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
     //Add something where you check to see if the user still has events in the classes field. If not remove the class
     func reloadData() {
         reloadFirestoreData()
-        
         if let selection = calendarView.selectionBehavior as? UICalendarSelectionSingleDate,
                let selectedDateComponents = selection.selectedDate,
-               let selectedDate = Calendar.current.date(from: selectedDateComponents) {
+               let selectedDate = Calendar.current.date(from: selectedDateComponents), !toggleOn {
                 
                 let formatter = DateFormatter()
                 formatter.dateFormat = "MM-dd-yyyy"
                 let dateString = formatter.string(from: selectedDate)
                 reloadDisplayData(dateString: dateString)
-            }
+        } else {
+            //displayedEvents = eventList
+            //tableView.reloadData()
+        }
     }
     
     //ADJUST THIS AFTER INTEGRATING API FOR EVENTS
