@@ -29,7 +29,10 @@ protocol EventHandler {
 class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableViewDelegate, UITableViewDataSource, EventReloader, EventHandler, UICalendarSelectionSingleDateDelegate, UICalendarViewDelegate {
     
     
+    @IBOutlet weak var toolbar: UIToolbar!
+    @IBOutlet weak var calendar: UIView!
     
+    @IBOutlet weak var stackView: UIStackView!
     @IBOutlet weak var tableView: UITableView!
     let confirmSegue = "eventConfirmSegue"
     let eventId = "eventId"
@@ -53,29 +56,99 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
         
-        createCalendar()
+        createCalendarLayout() //May need to move to viewDidLoad
         
         
         reloadData()
     }
     
-    func createCalendar() {
+    //Mess around with margins later (Doing the layout programatically)
+    func createCalendarLayout() {
+        // Disable autoresizing mask for views to use Auto Layout
+        calendar.translatesAutoresizingMaskIntoConstraints = false
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        toolbar.translatesAutoresizingMaskIntoConstraints = false
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+            
+        // Set backgrounds transparent except toolbar and container
+        calendar.backgroundColor = .clear
+        stackView.backgroundColor = .clear
+        tableView.backgroundColor = .clear
+        
+        // Toolbar fixed height (enough space for image buttons)
+        toolbar.heightAnchor.constraint(equalToConstant: 100).isActive = true
+            
+        // Container to hold calendar view with rounded corners and white background
+        let container = UIView()
+        container.translatesAutoresizingMaskIntoConstraints = false
+        container.backgroundColor = .white  // keep white for visible rounded corners
+        container.layer.cornerRadius = 15
+        container.layer.masksToBounds = true  // clip inside corners
+            
+        // Shadow container to hold container and apply shadow
+        let shadowContainer = UIView()
+        shadowContainer.translatesAutoresizingMaskIntoConstraints = false
+        shadowContainer.backgroundColor = .clear
+        shadowContainer.layer.shadowColor = UIColor.black.cgColor
+        shadowContainer.layer.shadowOpacity = 0.15
+        shadowContainer.layer.shadowOffset = CGSize(width: 0, height: 3)
+        shadowContainer.layer.shadowRadius = 6
+        shadowContainer.layer.masksToBounds = false
+            
+        calendar.addSubview(shadowContainer)
+        shadowContainer.addSubview(container)
+            
+        NSLayoutConstraint.activate([
+            shadowContainer.leadingAnchor.constraint(equalTo: calendar.leadingAnchor, constant: 20),
+            shadowContainer.trailingAnchor.constraint(equalTo: calendar.trailingAnchor, constant: -20),
+            shadowContainer.topAnchor.constraint(equalTo: calendar.topAnchor, constant: 10),
+            shadowContainer.bottomAnchor.constraint(equalTo: calendar.bottomAnchor, constant: -10),
+                
+            container.leadingAnchor.constraint(equalTo: shadowContainer.leadingAnchor),
+            container.trailingAnchor.constraint(equalTo: shadowContainer.trailingAnchor),
+            container.topAnchor.constraint(equalTo: shadowContainer.topAnchor),
+            container.bottomAnchor.constraint(equalTo: shadowContainer.bottomAnchor)
+        ])
+            
+        // Create and add UICalendarView inside container
         let calendarView = UICalendarView()
         calendarView.translatesAutoresizingMaskIntoConstraints = false
-        
         calendarView.calendar = .current
         calendarView.locale = .current
         calendarView.fontDesign = .rounded
         calendarView.delegate = self
-        
-        view.addSubview(calendarView)
-        
+        calendarView.backgroundColor = .clear
+            
+        container.addSubview(calendarView)
+            
         NSLayoutConstraint.activate([
-            calendarView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
-            calendarView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
-            calendarView.heightAnchor.constraint(equalToConstant: 300),
-            calendarView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
+            calendarView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            calendarView.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            calendarView.topAnchor.constraint(equalTo: container.topAnchor),
+            calendarView.bottomAnchor.constraint(equalTo: container.bottomAnchor)
         ])
+            
+        // TableView fixed height for 5 rows (~50 height each)
+        let rowHeight: CGFloat = 60
+        let numberOfRows: CGFloat = 5
+        let tableHeight = rowHeight * numberOfRows
+        tableView.heightAnchor.constraint(equalToConstant: tableHeight).isActive = true
+            
+        // Stack view pinned to safe area with vertical padding and edges
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
+            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            stackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        ])
+            
+        // Stack view properties with layout margins enabled
+        stackView.axis = .vertical
+        stackView.alignment = .fill
+        stackView.distribution = .fill
+        stackView.spacing = 8
+        stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.layoutMargins = UIEdgeInsets(top: 20, left: 0, bottom: 0, right: 0)
     }
     
     func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate dateComponents: DateComponents?) {

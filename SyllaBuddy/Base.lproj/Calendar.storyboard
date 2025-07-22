@@ -16,64 +16,69 @@
                         <rect key="frame" x="0.0" y="0.0" width="402" height="874"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="ePE-AK-dg7">
-                                <rect key="frame" x="0.0" y="168" width="402" height="606"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="eventId" textLabel="3hS-9a-Wyh" detailTextLabel="eHC-cQ-u5b" style="IBUITableViewCellStyleValue2" id="Ejc-4a-0Qt">
-                                        <rect key="frame" x="0.0" y="50" width="402" height="43.666667938232422"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Ejc-4a-0Qt" id="MHX-jU-6cz">
-                                            <rect key="frame" x="0.0" y="0.0" width="402" height="43.666667938232422"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="3hS-9a-Wyh">
-                                                    <rect key="frame" x="20" y="15" width="91" height="15.666666666666666"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="HyV-YW-mzd">
+                                <rect key="frame" x="0.0" y="0.0" width="402" height="874"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" id="8QW-SI-c6L">
+                                        <rect key="frame" x="0.0" y="0.0" width="402" height="0.0"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                    </view>
+                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="ePE-AK-dg7">
+                                        <rect key="frame" x="0.0" y="0.0" width="402" height="606"/>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <prototypes>
+                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="eventId" textLabel="3hS-9a-Wyh" detailTextLabel="eHC-cQ-u5b" style="IBUITableViewCellStyleValue2" id="Ejc-4a-0Qt">
+                                                <rect key="frame" x="0.0" y="50" width="402" height="43.666667938232422"/>
+                                                <autoresizingMask key="autoresizingMask"/>
+                                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Ejc-4a-0Qt" id="MHX-jU-6cz">
+                                                    <rect key="frame" x="0.0" y="0.0" width="402" height="43.666667938232422"/>
                                                     <autoresizingMask key="autoresizingMask"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Detail" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="eHC-cQ-u5b">
-                                                    <rect key="frame" x="117" y="15" width="35" height="15.666666666666666"/>
-                                                    <autoresizingMask key="autoresizingMask"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                            </subviews>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
-                                </prototypes>
-                            </tableView>
-                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dU1-2D-AZy">
-                                <rect key="frame" x="0.0" y="774" width="402" height="100"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="100" id="lgx-wT-3cN"/>
-                                </constraints>
-                                <items>
-                                    <barButtonItem title="Calendar" id="2Ey-FS-QFb"/>
-                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="MAZ-IO-9l4"/>
-                                    <barButtonItem title="Community" id="7QS-cE-GPL"/>
-                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="Cb5-yw-uWY"/>
-                                    <barButtonItem title="Settings" id="wIY-t8-rAU"/>
-                                </items>
-                            </toolbar>
+                                                    <subviews>
+                                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="3hS-9a-Wyh">
+                                                            <rect key="frame" x="20" y="15" width="91" height="15.666666666666666"/>
+                                                            <autoresizingMask key="autoresizingMask"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Detail" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="eHC-cQ-u5b">
+                                                            <rect key="frame" x="117" y="15" width="35" height="15.666666666666666"/>
+                                                            <autoresizingMask key="autoresizingMask"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                    </subviews>
+                                                </tableViewCellContentView>
+                                            </tableViewCell>
+                                        </prototypes>
+                                    </tableView>
+                                    <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dU1-2D-AZy">
+                                        <rect key="frame" x="0.0" y="606" width="402" height="268"/>
+                                        <items>
+                                            <barButtonItem title="Calendar" id="2Ey-FS-QFb"/>
+                                            <barButtonItem style="plain" systemItem="flexibleSpace" id="MAZ-IO-9l4"/>
+                                            <barButtonItem title="Community" id="7QS-cE-GPL"/>
+                                            <barButtonItem style="plain" systemItem="flexibleSpace" id="Cb5-yw-uWY"/>
+                                            <barButtonItem title="Settings" id="wIY-t8-rAU"/>
+                                        </items>
+                                    </toolbar>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="KBi-Zc-Mj3"/>
                         <color key="backgroundColor" red="1" green="0.82789456839999997" blue="0.5261248946" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="ePE-AK-dg7" firstAttribute="leading" secondItem="KBi-Zc-Mj3" secondAttribute="leading" id="6H7-TN-dTD"/>
-                            <constraint firstItem="dU1-2D-AZy" firstAttribute="top" secondItem="ePE-AK-dg7" secondAttribute="bottom" id="G1d-GK-dNE"/>
-                            <constraint firstItem="ePE-AK-dg7" firstAttribute="top" secondItem="KBi-Zc-Mj3" secondAttribute="top" id="IIA-2M-dQg"/>
-                            <constraint firstItem="dU1-2D-AZy" firstAttribute="leading" secondItem="o1M-aG-J6S" secondAttribute="leading" id="KQl-8T-JH9"/>
-                            <constraint firstItem="ePE-AK-dg7" firstAttribute="trailing" secondItem="KBi-Zc-Mj3" secondAttribute="trailing" id="SpY-1N-bOY"/>
-                            <constraint firstAttribute="bottom" secondItem="dU1-2D-AZy" secondAttribute="bottom" id="hF6-mw-Iuc"/>
-                            <constraint firstAttribute="trailing" secondItem="dU1-2D-AZy" secondAttribute="trailing" id="qJx-OU-zzI"/>
+                            <constraint firstAttribute="trailing" secondItem="HyV-YW-mzd" secondAttribute="trailing" id="aYW-LD-HwC"/>
+                            <constraint firstItem="HyV-YW-mzd" firstAttribute="leading" secondItem="KBi-Zc-Mj3" secondAttribute="leading" id="hTV-5U-PTJ"/>
+                            <constraint firstAttribute="bottom" secondItem="HyV-YW-mzd" secondAttribute="bottom" id="qrz-dm-GZB"/>
+                            <constraint firstItem="HyV-YW-mzd" firstAttribute="top" secondItem="o1M-aG-J6S" secondAttribute="top" id="v7J-80-lIc"/>
                         </constraints>
                     </view>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" title="Calendar" id="Uce-SQ-mEV">
+                        <barButtonItem key="leftBarButtonItem" title="Item" image="line.3.horizontal" catalog="system" id="pjH-0t-m3Y"/>
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="iUg-0C-hpm">
                             <connections>
                                 <action selector="createEvent:" destination="T0l-HH-uvk" id="C45-gL-dOW"/>
@@ -82,7 +87,10 @@
                     </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
+                        <outlet property="calendar" destination="8QW-SI-c6L" id="R5Y-gl-8SN"/>
+                        <outlet property="stackView" destination="HyV-YW-mzd" id="SMO-YE-v7x"/>
                         <outlet property="tableView" destination="ePE-AK-dg7" id="DVy-yQ-5dA"/>
+                        <outlet property="toolbar" destination="dU1-2D-AZy" id="Ugj-sd-mgF"/>
                         <segue destination="Ymr-Wp-6FY" kind="presentation" identifier="eventConfirmSegue" id="juI-CZ-SGw"/>
                     </connections>
                 </viewController>
@@ -194,6 +202,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="line.3.horizontal" catalog="system" width="128" height="65"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
