@@ -38,6 +38,7 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
     let confirmSegue = "eventConfirmSegue"
     let eventId = "eventId"
     var eventList: [Event]!
+    var displayedEvents: [Event]!
     var pdfList: [Event]!
     let db = Firestore.firestore()
     let eventStore = EKEventStore()
@@ -121,6 +122,15 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
         calendarView.delegate = self
         calendarView.selectionBehavior = UICalendarSelectionSingleDate(delegate: self)
         
+        //Look back at date formatter method potentially
+        let today = Date()
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM-dd-yyyy"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone.current
+        let todayString = formatter.string(from: today)
+        reloadDisplayData(dateString: todayString)
+        
             
         container.addSubview(calendarView)
             
@@ -155,11 +165,7 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
     }
     
     func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate dateComponents: DateComponents?) {
-        if let dateComponents = dateComponents, let date = Calendar.current.date(from: dateComponents) {
-            print("Selected date: \(date)")
-        } else {
-            print("No date selected")
-        }
+        reloadData()
     }
 
     
@@ -342,20 +348,23 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return eventList.count
+        return displayedEvents.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: eventId, for: indexPath)
-        cell.textLabel!.text = eventList[indexPath.row].event
-        cell.detailTextLabel!.text = "\(eventList[indexPath.row].eventClass)\n\(eventList[indexPath.row].date)"
+        cell.textLabel!.text = displayedEvents[indexPath.row].event
+        cell.detailTextLabel!.text = "\(displayedEvents[indexPath.row].eventClass)\n\(displayedEvents[indexPath.row].date)"
         return cell
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            let delete = eventList[indexPath.row]
-            eventList.remove(at: indexPath.row)
+            let delete = displayedEvents[indexPath.row]
+            displayedEvents.remove(at: indexPath.row)
+            if let index = eventList.firstIndex(of: delete) {
+                eventList.remove(at: index)
+            }
             tableView.deleteRows(at: [indexPath], with: .fade)
             
             let userEmail = Auth.auth().currentUser!.email
@@ -396,8 +405,7 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
         }
     }
     
-    //Add something where you check to see if the user still has events in the classes field. If not remove the class
-    func reloadData() {
+    func reloadFirestoreData() {
         eventList = [Event]()
         if let user = Auth.auth().currentUser {
             // User is signed in
@@ -436,7 +444,58 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
                 print("Final event list: \(self.eventList!)")
             }
         }
+    }
+    
+    func reloadDisplayData(dateString: String) {
+        displayedEvents = [] // Clear previous data
+            
+            let userEmail = Auth.auth().currentUser!.email
+            let collection = db.collection("User")
+            
+            collection.whereField("Email", isEqualTo: userEmail!).getDocuments { (querySnapshot, error) in
+                if let error = error {
+                    print("Error fetching user: \(error.localizedDescription)")
+                    return
+                }
+                
+                guard let document = querySnapshot?.documents.first else {
+                    print("No user document found")
+                    return
+                }
+                
+                if let eventsArray = document.data()["Events"] as? [[String: Any]] {
+                    for dict in eventsArray {
+                        if let event = dict["event"] as? String,
+                           let date = dict["date"] as? String,
+                           let className = dict["class"] as? String {
+                            
+                            if date == dateString {
+                                let matchedEvent = Event(date: date, event: event, eventClass: className)
+                                self.displayedEvents.append(matchedEvent)
+                            }
+                        }
+                    }
+                    print("Filtered events for \(dateString): \(self.displayedEvents)")
+                    self.tableView.reloadData()
+                }
+            }
         
+        
+    }
+    
+    //Add something where you check to see if the user still has events in the classes field. If not remove the class
+    func reloadData() {
+        reloadFirestoreData()
+        
+        if let selection = calendarView.selectionBehavior as? UICalendarSelectionSingleDate,
+               let selectedDateComponents = selection.selectedDate,
+               let selectedDate = Calendar.current.date(from: selectedDateComponents) {
+                
+                let formatter = DateFormatter()
+                formatter.dateFormat = "MM-dd-yyyy"
+                let dateString = formatter.string(from: selectedDate)
+                reloadDisplayData(dateString: dateString)
+            }
     }
     
     //ADJUST THIS AFTER INTEGRATING API FOR EVENTS

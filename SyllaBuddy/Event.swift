@@ -6,7 +6,7 @@
 //
 
 import Foundation
-class Event {
+class Event: Equatable {
     
     var date: String
     var event: String
@@ -17,6 +17,12 @@ class Event {
         self.event = event
         self.eventClass = eventClass
     }
+    
+    static func == (lhs: Event, rhs: Event) -> Bool {
+            return lhs.date == rhs.date &&
+                   lhs.event == rhs.event &&
+                   lhs.eventClass == rhs.eventClass
+        }
     
     func toDictionary() -> [String: Any] {
         return ["class": eventClass,
