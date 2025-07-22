@@ -34,6 +34,7 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
     
     @IBOutlet weak var stackView: UIStackView!
     @IBOutlet weak var tableView: UITableView!
+    var calendarView: UICalendarView!
     let confirmSegue = "eventConfirmSegue"
     let eventId = "eventId"
     var eventList: [Event]!
@@ -111,13 +112,15 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
         ])
             
         // Create and add UICalendarView inside container
-        let calendarView = UICalendarView()
+        calendarView = UICalendarView()
         calendarView.translatesAutoresizingMaskIntoConstraints = false
         calendarView.calendar = .current
         calendarView.locale = .current
         calendarView.fontDesign = .rounded
-        calendarView.delegate = self
         calendarView.backgroundColor = .clear
+        calendarView.delegate = self
+        calendarView.selectionBehavior = UICalendarSelectionSingleDate(delegate: self)
+        
             
         container.addSubview(calendarView)
             
@@ -129,8 +132,8 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
         ])
             
         // TableView fixed height for 5 rows (~50 height each)
-        let rowHeight: CGFloat = 60
-        let numberOfRows: CGFloat = 5
+        let rowHeight: CGFloat = 50
+        let numberOfRows: CGFloat = 4
         let tableHeight = rowHeight * numberOfRows
         tableView.heightAnchor.constraint(equalToConstant: tableHeight).isActive = true
             
@@ -152,7 +155,11 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
     }
     
     func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate dateComponents: DateComponents?) {
-        return
+        if let dateComponents = dateComponents, let date = Calendar.current.date(from: dateComponents) {
+            print("Selected date: \(date)")
+        } else {
+            print("No date selected")
+        }
     }
 
     
