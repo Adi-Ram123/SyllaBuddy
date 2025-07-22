@@ -78,11 +78,7 @@
                     </view>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" title="Calendar" id="Uce-SQ-mEV">
-                        <barButtonItem key="leftBarButtonItem" title="Item" image="line.3.horizontal" catalog="system" id="pjH-0t-m3Y">
-                            <connections>
-                                <segue destination="V2j-GG-bH7" kind="show" identifier="gridViewSegue" animates="NO" id="1HL-MB-eTS"/>
-                            </connections>
-                        </barButtonItem>
+                        <barButtonItem key="leftBarButtonItem" title="Item" image="line.3.horizontal" catalog="system" id="pjH-0t-m3Y"/>
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="iUg-0C-hpm">
                             <connections>
                                 <action selector="createEvent:" destination="T0l-HH-uvk" id="C45-gL-dOW"/>
@@ -100,7 +96,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="LMs-t7-9sv" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3125" y="605"/>
+            <point key="canvasLocation" x="3076" y="588"/>
         </scene>
         <!--Event View Controller-->
         <scene sceneID="agu-mW-M0F">
@@ -204,95 +200,7 @@
             </objects>
             <point key="canvasLocation" x="2217.9104477611941" y="587.64302059496561"/>
         </scene>
-        <!--Calendar-->
-        <scene sceneID="4NG-Iw-w11">
-            <objects>
-                <viewController storyboardIdentifier="GridView" id="V2j-GG-bH7" customClass="GridView" customModule="SyllaBuddy" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="7i1-ZH-Y2r">
-                        <rect key="frame" x="0.0" y="0.0" width="402" height="874"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="DGG-fa-CO0">
-                                <rect key="frame" x="0.0" y="124" width="402" height="750"/>
-                                <subviews>
-                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="aTw-pT-5Sw">
-                                        <rect key="frame" x="0.0" y="0.0" width="402" height="650"/>
-                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                        <prototypes>
-                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="eventId" textLabel="E5a-sN-gZm" detailTextLabel="jAy-jA-7sE" style="IBUITableViewCellStyleValue2" id="E22-od-Vd7">
-                                                <rect key="frame" x="0.0" y="50" width="402" height="43.666667938232422"/>
-                                                <autoresizingMask key="autoresizingMask"/>
-                                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="E22-od-Vd7" id="PFF-xG-3Hn">
-                                                    <rect key="frame" x="0.0" y="0.0" width="402" height="43.666667938232422"/>
-                                                    <autoresizingMask key="autoresizingMask"/>
-                                                    <subviews>
-                                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="E5a-sN-gZm">
-                                                            <rect key="frame" x="20" y="15" width="91" height="15.666666666666666"/>
-                                                            <autoresizingMask key="autoresizingMask"/>
-                                                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                                            <nil key="textColor"/>
-                                                            <nil key="highlightedColor"/>
-                                                        </label>
-                                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Detail" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="jAy-jA-7sE">
-                                                            <rect key="frame" x="117" y="15" width="35" height="15.666666666666666"/>
-                                                            <autoresizingMask key="autoresizingMask"/>
-                                                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                                            <nil key="textColor"/>
-                                                            <nil key="highlightedColor"/>
-                                                        </label>
-                                                    </subviews>
-                                                </tableViewCellContentView>
-                                            </tableViewCell>
-                                        </prototypes>
-                                    </tableView>
-                                    <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VSk-kZ-Qte">
-                                        <rect key="frame" x="0.0" y="650" width="402" height="100"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="100" id="E4t-aN-aHA"/>
-                                        </constraints>
-                                        <items>
-                                            <barButtonItem title="Calendar" id="hjx-EO-HCU"/>
-                                            <barButtonItem style="plain" systemItem="flexibleSpace" id="4Di-9r-WvQ"/>
-                                            <barButtonItem title="Community" id="BrL-Rn-qSI"/>
-                                            <barButtonItem style="plain" systemItem="flexibleSpace" id="spf-uH-b7r"/>
-                                            <barButtonItem title="Settings" id="M1I-WE-hhD"/>
-                                        </items>
-                                    </toolbar>
-                                </subviews>
-                            </stackView>
-                        </subviews>
-                        <viewLayoutGuide key="safeArea" id="Bdn-oc-DuE"/>
-                        <color key="backgroundColor" red="1" green="0.82789456839999997" blue="0.5261248946" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <constraints>
-                            <constraint firstAttribute="trailing" secondItem="DGG-fa-CO0" secondAttribute="trailing" id="8kh-7O-YFn"/>
-                            <constraint firstItem="DGG-fa-CO0" firstAttribute="leading" secondItem="Bdn-oc-DuE" secondAttribute="leading" id="NBM-Cs-iTi"/>
-                            <constraint firstItem="DGG-fa-CO0" firstAttribute="top" secondItem="Bdn-oc-DuE" secondAttribute="top" id="gWJ-wx-06x"/>
-                            <constraint firstAttribute="bottom" secondItem="DGG-fa-CO0" secondAttribute="bottom" id="q65-Ni-J61"/>
-                        </constraints>
-                    </view>
-                    <toolbarItems/>
-                    <navigationItem key="navigationItem" title="Calendar" id="zD2-FF-7Ku">
-                        <barButtonItem key="leftBarButtonItem" title="Item" image="line.3.horizontal" catalog="system" id="XLE-QH-c2T">
-                            <connections>
-                                <segue destination="T0l-HH-uvk" kind="show" identifier="calendarView" animates="NO" id="BqR-ns-T6t"/>
-                            </connections>
-                        </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="Wv3-x0-WfB"/>
-                    </navigationItem>
-                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
-                    <connections>
-                        <outlet property="tableView" destination="aTw-pT-5Sw" id="11p-V5-LNr"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="n5X-cZ-8QL" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="3124" y="1350"/>
-        </scene>
     </scenes>
-    <inferredMetricsTieBreakers>
-        <segue reference="1HL-MB-eTS"/>
-        <segue reference="BqR-ns-T6t"/>
-    </inferredMetricsTieBreakers>
     <resources>
         <image name="line.3.horizontal" catalog="system" width="128" height="65"/>
         <systemColor name="systemBackgroundColor">

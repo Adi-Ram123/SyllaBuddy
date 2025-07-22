@@ -24,6 +24,7 @@ protocol EventReloader {
 
 protocol EventHandler {
     func createCalendarEvent(title: String, date: String)
+    func deleteCalendarEvent(title: String, dateString: String)
 }
 
 class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableViewDelegate, UITableViewDataSource, EventReloader, EventHandler, UICalendarSelectionSingleDateDelegate, UICalendarViewDelegate {
@@ -37,12 +38,17 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
     var calendarView: UICalendarView!
     let confirmSegue = "eventConfirmSegue"
     let eventId = "eventId"
-    let gridSegue = "gridViewSegue"
     var eventList: [Event]!
     var displayedEvents: [Event]!
     var pdfList: [Event]!
     let db = Firestore.firestore()
     let eventStore = EKEventStore()
+    let hamburgerButton = UIButton(type: .system)
+    // Store the height constraint and natural height
+    var calendarHeightConstraint: NSLayoutConstraint!
+    var calendarNaturalHeight: CGFloat?
+    
+    var toggleOn = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -59,10 +65,63 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
         
+        hamburgerButton.setImage(UIImage(systemName: "line.horizontal.3"), for: .normal)
+        hamburgerButton.tintColor = .systemBlue
+
+        // Bigger button size for clear outline
+        let size: CGFloat = 44
+        hamburgerButton.frame = CGRect(x: 0, y: 0, width: size, height: size)
+        
+        toggleOn = false
+
+        
+
+        hamburgerButton.addTarget(self, action: #selector(hamburgerPressed), for: .touchUpInside)
+
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: hamburgerButton)
+        
         createCalendarLayout() //May need to move to viewDidLoad
         
         
         reloadData()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+            if calendarHeightConstraint == nil {
+                calendarNaturalHeight = calendar.frame.height
+                print("Detected calendar height: \(calendarNaturalHeight!)")
+                calendarHeightConstraint = calendar.heightAnchor.constraint(equalToConstant: calendarNaturalHeight!)
+                calendarHeightConstraint.isActive = true
+            }
+    }
+    
+    @objc func hamburgerPressed() {
+        toggleOn = !toggleOn
+        print("Toggle Pressed")
+
+                if toggleOn {
+                    // Collapse calendar: set height to zero
+                    calendarHeightConstraint.constant = 0
+                    hamburgerButton.layer.borderColor = UIColor.systemBlue.cgColor
+                    hamburgerButton.layer.borderWidth = 2
+                    hamburgerButton.layer.cornerRadius = 4
+                    hamburgerButton.clipsToBounds = true
+                } else {
+                    // Expand calendar: restore natural height
+                    calendarHeightConstraint.constant = calendarNaturalHeight!
+                    hamburgerButton.layer.borderColor = nil
+                    hamburgerButton.layer.borderWidth = 0
+                    hamburgerButton.layer.cornerRadius = 0
+                    hamburgerButton.clipsToBounds = false
+                }
+
+                // Animate the height change
+                UIView.animate(withDuration: 0.3) {
+                    self.view.layoutIfNeeded()
+                }
+        
     }
     
     //Mess around with margins later (Doing the layout programatically)
@@ -579,10 +638,7 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
             nextVC.eventList = pdfList
         }
         
-        if segue.identifier == gridSegue, let nextVC = segue.destination as? GridView {
-            nextVC.delegate = self
-            nextVC.eventList = eventList
-        }
+       
     }
     
 }
