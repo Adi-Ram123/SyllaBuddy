@@ -6,8 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		37DC4C862E314F250016C10D /* Secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = 37DC4C852E314F250016C10D /* Secrets.plist */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		3756FFFC2E24A54E00707DE6 /* Syllabuddy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Syllabuddy.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		37DC4C852E314F250016C10D /* Secrets.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Secrets.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -45,6 +50,7 @@
 		3756FFF32E24A54E00707DE6 = {
 			isa = PBXGroup;
 			children = (
+				37DC4C852E314F250016C10D /* Secrets.plist */,
 				3756FFFE2E24A54E00707DE6 /* Syllabuddy */,
 				3756FFFD2E24A54E00707DE6 /* Products */,
 			);
@@ -122,6 +128,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				37DC4C862E314F250016C10D /* Secrets.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
