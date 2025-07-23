@@ -6,7 +6,7 @@
 //
 
 import Foundation
-class Event: Equatable {
+class Event: Codable, Equatable {
     
     var date: String
     var event: String

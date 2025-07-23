@@ -20,3 +20,6 @@ GoogleService-Info.plist
 
 # Others
 *.orig
+
+#Hiding API
+Secrets.plistSecrets.plist
