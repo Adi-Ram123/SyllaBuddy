@@ -12,18 +12,20 @@ import FirebaseFirestore
 class ThreadViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     @IBOutlet weak var tableView: UITableView!
-    var threadList: [Thread]!
+    var threadList = [Thread]()
     var userClasses: [String]!
     let cellId = "threadId"
     let threadId = "viewThread"
     let db = Firestore.firestore()
+    var threadListener: ListenerRegistration?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.hidesBackButton = true
         tableView.delegate = self
         tableView.dataSource = self
-        reloadThreads()
+        getUserClasses()
+        setupThreadListener()
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -71,25 +73,27 @@ class ThreadViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
     }
     
-    func reloadThreads() {
-        getUserClasses()
-        threadList = [Thread]()
-        let collection = db.collection("Thread")
-        
-        collection.getDocuments { (snapshot, error) in
-            if let error = error {
-                print("Error fetching documents: \(error)")
-                return
-            }
-
-            guard let documents = snapshot?.documents else {
-                print("No documents found")
-                return
-            }
+    func setupThreadListener() {
+        // Remove any previous listener if exists
+        threadListener?.remove()
             
+        threadListener = db.collection("Thread").addSnapshotListener { snapshot, error in
+            if let error = error {
+                print("Error listening to threads: \(error)")
+                return
+            }
+                
+            guard let documents = snapshot?.documents else {
+                print("No threads found")
+                return
+            }
+                
+            // Clear old threads before repopulating
+            self.threadList = [Thread]()
+                
             for document in documents {
                 let data = document.data()
-                // Convert the "Posts" map to [Post]
+                    
                 var posts: [Post] = []
                 if let postArray = data["Posts"] as? [[String: Any]] {
                     posts = postArray.compactMap { postDict in
@@ -102,19 +106,29 @@ class ThreadViewController: UIViewController, UITableViewDelegate, UITableViewDa
                         }
                         return Post(username: username, message: message)
                     }
-                } else {
-                    print("Posts is not in expected array format")
                 }
+                    
+                if let className = data["Class"] as? String,
+                    let title = data["Title"] as? String,
+                    let university = data["University"] as? String {
+                    let thread = Thread(className: className, posts: posts, title: title, university: university)
+                        
+                    // Optional filtering by userClasses
+    //              if self.userClasses == nil || self.userClasses.contains(className) {
+    //                  self.threadList.append(thread)
+    //              }
+                        
+                    // For now, append all threads
+                    self.threadList.append(thread)
+                }
+            }
                 
-                
-                
-                let myThread = Thread(className: data["Class"] as! String, posts: posts, title: data["Title"] as! String, university: data["University"] as! String)
-                self.threadList.append(myThread)
+            DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
         }
-        
     }
+
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "viewThread", let nextVC = segue.destination as? PostViewController, let indexPath = tableView.indexPathForSelectedRow {

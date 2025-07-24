@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import FirebaseFirestore
+import FirebaseAuth
 
 class PostViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
@@ -16,6 +18,9 @@ class PostViewController: UIViewController, UITableViewDelegate, UITableViewData
     let sendButton = UIButton(type: .system)
     var postList: [Post]!
     var threadInfo: Thread!
+    let db = Firestore.firestore()
+    var user: String!
+    var threadListener: ListenerRegistration?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,8 +28,8 @@ class PostViewController: UIViewController, UITableViewDelegate, UITableViewData
         setupSubviews()
         postList = threadInfo.posts
         tableView.register(PostCell.self, forCellReuseIdentifier: "PostCell")
-
-        // Do any additional setup after loading the view.
+        listenForPostUpdates()
+        getAuthUser()
     }
     
     func setupStackView() {
@@ -71,18 +76,20 @@ class PostViewController: UIViewController, UITableViewDelegate, UITableViewData
         buttonContainer.translatesAutoresizingMaskIntoConstraints = false
         buttonContainer.heightAnchor.constraint(equalToConstant: 44).isActive = true
 
-        sendButton.setTitle("Send", for: .normal)
+        sendButton.setTitle("Post", for: .normal)
         sendButton.backgroundColor = .systemBlue
         sendButton.setTitleColor(.white, for: .normal)
         sendButton.layer.cornerRadius = 8
         sendButton.translatesAutoresizingMaskIntoConstraints = false
+        sendButton.addTarget(self, action: #selector(postPressed), for: .touchUpInside)
 
         buttonContainer.addSubview(sendButton)
 
         NSLayoutConstraint.activate([
-            sendButton.centerXAnchor.constraint(equalTo: buttonContainer.centerXAnchor),
+            sendButton.trailingAnchor.constraint(equalTo: buttonContainer.trailingAnchor),
             sendButton.widthAnchor.constraint(equalTo: buttonContainer.widthAnchor, multiplier: 0.25),
-            sendButton.heightAnchor.constraint(equalTo: buttonContainer.heightAnchor)
+            sendButton.heightAnchor.constraint(equalTo: buttonContainer.heightAnchor),
+            sendButton.centerYAnchor.constraint(equalTo: buttonContainer.centerYAnchor)
         ])
 
         stackView.addArrangedSubview(buttonContainer)
@@ -96,6 +103,122 @@ class PostViewController: UIViewController, UITableViewDelegate, UITableViewData
         textHeightConstraint.priority = .defaultHigh
         textHeightConstraint.isActive = true
     }
+    
+    func getAuthUser() {
+        if let user = Auth.auth().currentUser {
+            // User is signed in
+            print("User is signed in with email: \(user.email ?? "No Email")")
+        } else {
+            // No user is signed in
+            print("No user is currently signed in.")
+        }
+        let userEmail = Auth.auth().currentUser!.email
+        print(userEmail!)
+        
+        let collection = db.collection("User")
+        
+        collection.whereField("Email", isEqualTo: userEmail!).getDocuments
+        {
+            (querySnapshot, error) in
+            if let error = error {
+                print("Error querying user: \(error.localizedDescription)")
+            } else if let documents = querySnapshot?.documents, !documents.isEmpty {
+                let userDoc = documents[0]
+                let data = userDoc.data()
+                print("User Classes: \(data["Username"]!)")
+                self.user = data["Username"] as? String
+            }
+        }
+    }
+    
+    @objc func postPressed() {
+        // Check if text input is empty
+        guard let message = messageInput.text, !message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            print("Text Field is empty or only whitespace")
+            return
+        }
+
+        let collection = db.collection("Thread")
+
+        // Query based on matching class and title (should be unique)
+        collection
+            .whereField("Class", isEqualTo: threadInfo.className)
+            .whereField("Title", isEqualTo: threadInfo.title)
+            .getDocuments { (querySnapshot, error) in
+                if let error = error {
+                    print("Error querying thread: \(error.localizedDescription)")
+                    return
+                }
+
+                guard let documents = querySnapshot?.documents, !documents.isEmpty else {
+                    print("No thread document found matching Class and Title.")
+                    return
+                }
+
+                let threadDoc = documents[0]
+                let docRef = collection.document(threadDoc.documentID)
+
+                // Create Post object using your global `user` and message text
+                let myPost = Post(username: self.user, message: self.messageInput.text)
+                
+
+                // Update the document by appending the new post to the Posts array
+                docRef.updateData([
+                    "Posts": FieldValue.arrayUnion([myPost.toDictionary()])
+                ]) { error in
+                    if let error = error {
+                        print("Failed to update thread with new post: \(error.localizedDescription)")
+                    } else {
+                        print("Successfully added post!")
+                        //self.postList.append(myPost)
+                        self.messageInput.text = ""
+                        // Listener will handle reloading
+                    }
+                }
+            }
+    }
+    
+    //Keeps looking for updates from current and other users
+    func listenForPostUpdates() {
+        let collection = db.collection("Thread")
+
+        collection
+            .whereField("Class", isEqualTo: threadInfo.className)
+            .whereField("Title", isEqualTo: threadInfo.title)
+            .getDocuments { (querySnapshot, error) in
+                if let error = error {
+                    print("Error setting up listener: \(error.localizedDescription)")
+                    return
+                }
+
+                guard let documents = querySnapshot?.documents, !documents.isEmpty else {
+                    print("No thread document found for listener.")
+                    return
+                }
+
+                let threadDoc = documents[0]
+                let docRef = collection.document(threadDoc.documentID)
+
+                self.threadListener = docRef.addSnapshotListener { documentSnapshot, error in
+                    if let error = error {
+                        print("Snapshot listener error: \(error)")
+                        return
+                    }
+
+                    guard let data = documentSnapshot?.data() else { return }
+
+                    if let postDicts = data["Posts"] as? [[String: Any]] {
+                        self.postList = postDicts.map {
+                            Post(username: $0["username"] as! String, message: $0["message"] as! String)
+                        }
+                        DispatchQueue.main.async {
+                            self.tableView.reloadData()
+                        }
+                    }
+                }
+            }
+    }
+
 
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
