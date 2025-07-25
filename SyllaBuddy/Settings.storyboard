@@ -64,7 +64,7 @@
                             </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
-                        <color key="backgroundColor" red="1" green="0.82789456839999997" blue="0.5261248946" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" red="0.99989503619999998" green="0.82648551459999997" blue="0.52571135759999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="hK5-t4-dBt" secondAttribute="trailing" id="VIr-26-rUX"/>
                             <constraint firstItem="hK5-t4-dBt" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="pzG-dS-8q0"/>
@@ -92,7 +92,7 @@
                                         <rect key="frame" x="20" y="20" width="400" height="50"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Push Notifications" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jE3-Cl-1yf">
-                                                <rect key="frame" x="0.0" y="10.666666666666657" width="351" height="28.666666666666671"/>
+                                                <rect key="frame" x="0.0" y="10.666666666666659" width="351" height="28.666666666666671"/>
                                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
@@ -109,7 +109,7 @@
                                         <rect key="frame" x="20" y="70" width="400" height="50"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Homework Notifications" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bfV-7c-Wdd">
-                                                <rect key="frame" x="0.0" y="10.666666666666657" width="351" height="28.666666666666671"/>
+                                                <rect key="frame" x="0.0" y="10.666666666666659" width="351" height="28.666666666666671"/>
                                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
@@ -126,7 +126,7 @@
                                         <rect key="frame" x="20" y="120" width="400" height="50"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Exam Notifications" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9fX-rZ-brE">
-                                                <rect key="frame" x="0.0" y="10.666666666666686" width="351" height="28.666666666666671"/>
+                                                <rect key="frame" x="0.0" y="10.666666666666687" width="351" height="28.666666666666671"/>
                                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
@@ -183,7 +183,7 @@
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="KWg-Cp-X0p">
                                                 <rect key="frame" x="0.0" y="40" width="400" height="90"/>
                                                 <subviews>
-                                                    <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Current App Theme, use slider to choose" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="nOT-dc-H9H">
+                                                    <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Default" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="nOT-dc-H9H">
                                                         <rect key="frame" x="20" y="0.0" width="360" height="40"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="40" id="M87-61-kdm"/>
@@ -225,7 +225,7 @@
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="oJG-ey-tqp">
                                                 <rect key="frame" x="0.0" y="40" width="400" height="90"/>
                                                 <subviews>
-                                                    <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Current Font Style, use slider to choose" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="2Ly-Dn-QAc">
+                                                    <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="System" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="2Ly-Dn-QAc">
                                                         <rect key="frame" x="20" y="0.0" width="360" height="40"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="40" id="DPl-GX-hti"/>

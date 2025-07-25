@@ -31,7 +31,17 @@ class AppSettingsViewController: UIViewController, UIPickerViewDelegate, UIPicke
         
         setupPickers()
         loadSavedPreferences()
+        NotificationCenter.default.addObserver(self, selector: #selector(updateTheme), name: Notification.Name("ThemeChanged"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateFont), name: Notification.Name("FontChanged"), object: nil)
         // Do any additional setup after loading the view.
+    }
+    
+    @objc func updateTheme() {
+        ThemeManager.shared.applyTheme(to: self)
+    }
+    
+    @objc func updateFont() {
+        ThemeManager.shared.applyFont(to: self.view)
     }
     
     private func setupPickers() {
@@ -57,6 +67,7 @@ class AppSettingsViewController: UIViewController, UIPickerViewDelegate, UIPicke
     
     @objc private func doneTapped() {
         view.endEditing(true)
+        ThemeManager.shared.applyTheme(to: self)
     }
     
     func numberOfComponents(in pickerView: UIPickerView) -> Int { 1 }
@@ -99,6 +110,10 @@ class AppSettingsViewController: UIViewController, UIPickerViewDelegate, UIPicke
     @IBAction func saveThemeTapped(_ sender: Any) {
         if let theme = AppTheme(rawValue: selectedTheme) {
             ThemeManager.shared.updateTheme(theme)
+            ThemeManager.shared.applyTheme(to: self)
+            if let window = UIApplication.shared.windows.first {
+                ThemeManager.shared.applyTheme(to: window.rootViewController!)
+            }
         }
         showAlert(title: "Theme Saved", message: "App theme has been updated.")
     }
@@ -106,6 +121,7 @@ class AppSettingsViewController: UIViewController, UIPickerViewDelegate, UIPicke
     @IBAction func saveFontTapped(_ sender: Any) {
         if let font = AppFont(rawValue: selectedFont) {
             ThemeManager.shared.updateFont(font)
+            ThemeManager.shared.applyFont(to: self.view.window ?? self.view)
         }
         showAlert(title: "Font Saved", message: "Font style has been updated.")
     }

@@ -18,7 +18,7 @@ enum AppTheme: String, CaseIterable {
     var primaryColor: UIColor {
         switch self {
         case .default:
-            return .systemBackground
+            return UIColor(named: "DefaultBackground")!
         case .dark:
             return .black
         case .light:
@@ -32,9 +32,9 @@ enum AppTheme: String, CaseIterable {
     
     var textColor: UIColor {
         switch self {
-        case .default, .light, .blue, .green:
+        case .default, .light:
             return .label
-        case .dark:
+        case .dark, .blue, .green:
             return .white
         }
     }
@@ -60,14 +60,17 @@ enum AppFont: String, CaseIterable {
     case serif = "Times New Roman"
     case monospaced = "Courier New"
     
-    func font(ofSize size: CGFloat) -> UIFont {
+    func font(with originalFont: UIFont) -> UIFont {
+        let size = originalFont.pointSize
+        let descriptor = originalFont.fontDescriptor.withFamily(self.familyName)
+        return UIFont(descriptor: descriptor, size: size)
+    }
+    
+    private var familyName: String {
         switch self {
-        case .system:
-            return UIFont.systemFont(ofSize: size)
-        case .serif:
-            return UIFont(name: "Times New Roman", size: size) ?? UIFont.systemFont(ofSize: size)
-        case .monospaced:
-            return UIFont(name: "Courier New", size: size) ?? UIFont.systemFont(ofSize: size)
+        case .system: return UIFont.systemFont(ofSize: 12).familyName
+        case .serif: return "Times New Roman"
+        case .monospaced: return "Courier New"
         }
     }
 }
@@ -97,7 +100,7 @@ class ThemeManager {
         navAppearance.barTintColor = currentTheme.navigationBarColor
         navAppearance.titleTextAttributes = [
             .foregroundColor: currentTheme.textColor,
-            .font: currentFont.font(ofSize: 18)
+            .font: currentFont.font(with: UIFont.systemFont(ofSize: 18, weight: .semibold))
         ]
         navAppearance.tintColor = currentTheme.textColor
         
@@ -119,11 +122,26 @@ class ThemeManager {
         UserDefaults.standard.set(theme.rawValue, forKey: "appTheme")
         currentTheme = theme
         applyGlobalAppearance()
+        NotificationCenter.default.post(name: Notification.Name("ThemeChanged"), object: nil)
+    }
+    
+    func applyFont(to view: UIView) {
+        for subview in view.subviews {
+            if let label = subview as? UILabel, let font = label.font {
+                label.font = currentFont.font(with: font)
+            } else if let button = subview as? UIButton, let font = button.titleLabel?.font {
+                button.titleLabel?.font = currentFont.font(with: font)
+            } else if let textField = subview as? UITextField, let font = textField.font {
+                textField.font = currentFont.font(with: font)
+            }
+            applyFont(to: subview)
+        }
     }
     
     func updateFont(_ font: AppFont) {
         UserDefaults.standard.set(font.rawValue, forKey: "appFont")
         currentFont = font
         applyGlobalAppearance()
+        NotificationCenter.default.post(name: Notification.Name("FontChanged"),  object: nil)
     }
 }
