@@ -55,11 +55,19 @@
                                             <constraint firstAttribute="height" constant="100" id="cj0-cL-9ca"/>
                                         </constraints>
                                         <items>
-                                            <barButtonItem title="Calendar" id="jL0-pg-rD5"/>
+                                            <barButtonItem title="Calendar" id="jL0-pg-rD5">
+                                                <connections>
+                                                    <segue destination="3EE-O6-eGP" kind="show" id="rJ2-hf-PN5"/>
+                                                </connections>
+                                            </barButtonItem>
                                             <barButtonItem style="plain" systemItem="flexibleSpace" id="hje-T0-Ofv"/>
                                             <barButtonItem title="Community" id="6Pt-ak-jw3"/>
                                             <barButtonItem style="plain" systemItem="flexibleSpace" id="w3k-kA-PxD"/>
-                                            <barButtonItem title="Settings" id="OFe-qr-9lJ"/>
+                                            <barButtonItem title="Settings" id="OFe-qr-9lJ">
+                                                <connections>
+                                                    <segue destination="3yb-JT-flR" kind="show" id="VbI-LS-qg2"/>
+                                                </connections>
+                                            </barButtonItem>
                                         </items>
                                     </toolbar>
                                 </subviews>
@@ -94,6 +102,26 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="985.49618320610682" y="-27.464788732394368"/>
+        </scene>
+        <!--CalenderID-->
+        <scene sceneID="lZd-eW-wuO">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Calendar" referencedIdentifier="CalenderID" id="3EE-O6-eGP" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="U4h-Hh-MpZ"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="w6I-rx-KH9" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="759" y="317"/>
+        </scene>
+        <!--settingsID-->
+        <scene sceneID="mkS-a0-gO7">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Settings" referencedIdentifier="settingsID" id="3yb-JT-flR" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="lT4-sQ-Ujt"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="F0y-47-4fq" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1221" y="310"/>
         </scene>
         <!--Create Thread Controller-->
         <scene sceneID="yYS-B3-sSW">
