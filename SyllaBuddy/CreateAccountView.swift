@@ -11,21 +11,13 @@ import FirebaseFirestore
 
 class CreateAccountView: UIViewController, UITextFieldDelegate {
     
-    
     @IBOutlet weak var user: UITextField!
-    
     @IBOutlet weak var email: UITextField!
-    
     @IBOutlet weak var password: UITextField!
-    
     @IBOutlet weak var confirm: UITextField!
-    
     @IBOutlet weak var uni: UITextField!
     let db = Firestore.firestore()
-    
     let createId = "createSegue"
-    
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,7 +28,6 @@ class CreateAccountView: UIViewController, UITextFieldDelegate {
         uni.delegate = self
         password.isSecureTextEntry = true
         confirm.isSecureTextEntry = true
-
 
         // Do any additional setup after loading the view.
     }

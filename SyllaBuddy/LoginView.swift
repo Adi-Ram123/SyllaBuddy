@@ -62,9 +62,6 @@ class LoginView: UIViewController, UITextFieldDelegate {
             }
         }
         
-        
-        
-        
     }
     
     func makePopup(popupTitle:String, popupMessage:String) {

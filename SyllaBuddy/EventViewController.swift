@@ -11,7 +11,6 @@ import FirebaseFirestore
 
 class EventViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-    
     @IBOutlet weak var eventFound: UILabel!
     @IBOutlet weak var tableView: UITableView!
     var delegate: CalendarEventView!
@@ -53,7 +52,7 @@ class EventViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true) // Deselect immediately
-                
+            
         let alert = UIAlertController(title: "Edit Event", message: nil, preferredStyle: .alert)
         
         alert.addTextField { textField in
@@ -87,7 +86,6 @@ class EventViewController: UIViewController, UITableViewDelegate, UITableViewDat
             eventFound.text = "\(eventList.count) events found in \(eventList[0].eventClass)"
         }
     }
-    
     
     @IBAction func confirmPressed(_ sender: Any) {
         //Determine which document to update
@@ -141,8 +139,4 @@ class EventViewController: UIViewController, UITableViewDelegate, UITableViewDat
         self.dismiss(animated: true)
         
     }
-    
-
-    
-
 }

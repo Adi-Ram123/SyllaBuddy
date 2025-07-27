@@ -18,12 +18,14 @@ class Event: Codable, Equatable {
         self.eventClass = eventClass
     }
     
+    // To compare events to see if same
     static func == (lhs: Event, rhs: Event) -> Bool {
             return lhs.date == rhs.date &&
                    lhs.event == rhs.event &&
                    lhs.eventClass == rhs.eventClass
         }
     
+    // To make storing in firestore easier
     func toDictionary() -> [String: Any] {
         return ["class": eventClass,
                 "date": date,
