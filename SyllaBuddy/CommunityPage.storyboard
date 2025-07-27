@@ -75,6 +75,11 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Community" id="CPm-Lw-WH4">
+                        <barButtonItem key="leftBarButtonItem" title="Item" image="line.3.horizontal.decrease.circle" catalog="system" id="BFZ-ai-g0l">
+                            <connections>
+                                <action selector="filter:" destination="Y6W-OH-hqX" id="6NJ-z5-fXR"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="KBn-Y8-rDH">
                             <connections>
                                 <segue destination="LKK-eO-l29" kind="show" identifier="createThreadId" id="b82-4s-VwV"/>
@@ -142,6 +147,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="line.3.horizontal.decrease.circle" catalog="system" width="128" height="123"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

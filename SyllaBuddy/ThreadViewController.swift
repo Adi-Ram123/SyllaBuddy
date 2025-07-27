@@ -19,6 +19,7 @@ class ThreadViewController: UIViewController, UITableViewDelegate, UITableViewDa
     let createId = "createThreadId"
     let db = Firestore.firestore()
     var threadListener: ListenerRegistration?
+    var filteredClass: String!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,6 +28,7 @@ class ThreadViewController: UIViewController, UITableViewDelegate, UITableViewDa
         tableView.dataSource = self
         getUserClasses()
         setupThreadListener()
+        filteredClass = "all"
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -115,12 +117,9 @@ class ThreadViewController: UIViewController, UITableViewDelegate, UITableViewDa
                     let thread = Thread(className: className, posts: posts, title: title, university: university)
                         
                     // Optional filtering by userClasses
-    //              if self.userClasses == nil || self.userClasses.contains(className) {
-    //                  self.threadList.append(thread)
-    //              }
-                        
-                    // For now, append all threads
-                    self.threadList.append(thread)
+                    if self.filteredClass == "all" || self.filteredClass == className {
+                        self.threadList.append(thread)
+                    }
                 }
             }
                 
@@ -130,6 +129,30 @@ class ThreadViewController: UIViewController, UITableViewDelegate, UITableViewDa
         }
     }
 
+    @IBAction func filter(_ sender: Any) {
+        let alert = UIAlertController(title: "Choose Class", message: nil, preferredStyle: .actionSheet)
+            
+        for className in userClasses {
+            alert.addAction(UIAlertAction(title: className, style: .default) {
+                _ in
+                self.filteredClass = "\(className)"
+                print(self.filteredClass!)
+                self.setupThreadListener()
+            })
+        }
+        
+        alert.addAction(UIAlertAction(title: "show all", style: .default) {
+            _ in
+            self.filteredClass = "all"
+            print(self.filteredClass!)
+            self.setupThreadListener()
+        })
+
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+            
+        present(alert, animated: true, completion: nil)
+        
+    }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == threadId, let nextVC = segue.destination as? PostViewController, let indexPath = tableView.indexPathForSelectedRow {
