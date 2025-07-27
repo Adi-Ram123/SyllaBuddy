@@ -4,35 +4,101 @@
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
         <!--Community-->
         <scene sceneID="s0d-6b-0kx">
             <objects>
-                <viewController storyboardIdentifier="communityId" id="Y6W-OH-hqX" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="communityId" id="Y6W-OH-hqX" customClass="ThreadViewController" customModule="SyllaBuddy" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="5EZ-qb-Rvc">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="Aw0-z0-pTt">
+                                <rect key="frame" x="0.0" y="162" width="393" height="690"/>
+                                <subviews>
+                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="dco-gt-Cna">
+                                        <rect key="frame" x="0.0" y="0.0" width="393" height="590"/>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <prototypes>
+                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="threadId" textLabel="kWI-De-2Bh" detailTextLabel="MDK-ly-6RA" style="IBUITableViewCellStyleValue1" id="mp3-IZ-CaP">
+                                                <rect key="frame" x="0.0" y="50" width="393" height="43.666667938232422"/>
+                                                <autoresizingMask key="autoresizingMask"/>
+                                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="mp3-IZ-CaP" id="23j-2q-3hi">
+                                                    <rect key="frame" x="0.0" y="0.0" width="393" height="43.666667938232422"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <subviews>
+                                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="kWI-De-2Bh">
+                                                            <rect key="frame" x="20" y="15" width="25" height="14.333333333333334"/>
+                                                            <autoresizingMask key="autoresizingMask"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="0.0"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Detail" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="MDK-ly-6RA">
+                                                            <rect key="frame" x="340.33333333333331" y="15" width="32.666666666666664" height="14.333333333333334"/>
+                                                            <autoresizingMask key="autoresizingMask"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="0.0"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                    </subviews>
+                                                </tableViewCellContentView>
+                                            </tableViewCell>
+                                        </prototypes>
+                                    </tableView>
+                                    <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eyd-xG-Qtn">
+                                        <rect key="frame" x="0.0" y="590" width="393" height="100"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="100" id="cj0-cL-9ca"/>
+                                        </constraints>
+                                        <items>
+                                            <barButtonItem title="Calendar" id="jL0-pg-rD5"/>
+                                            <barButtonItem style="plain" systemItem="flexibleSpace" id="hje-T0-Ofv"/>
+                                            <barButtonItem title="Community" id="6Pt-ak-jw3"/>
+                                            <barButtonItem style="plain" systemItem="flexibleSpace" id="w3k-kA-PxD"/>
+                                            <barButtonItem title="Settings" id="OFe-qr-9lJ"/>
+                                        </items>
+                                    </toolbar>
+                                </subviews>
+                            </stackView>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" red="1" green="0.82789456839999997" blue="0.5261248946" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="Aw0-z0-pTt" secondAttribute="bottom" id="4ag-eE-ztG"/>
+                            <constraint firstItem="Aw0-z0-pTt" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="Bpt-th-kwA"/>
+                            <constraint firstItem="Aw0-z0-pTt" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="RZx-Zr-brg"/>
+                            <constraint firstAttribute="trailing" secondItem="Aw0-z0-pTt" secondAttribute="trailing" id="eEI-iJ-Z0E"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Community" id="CPm-Lw-WH4">
+                        <barButtonItem key="leftBarButtonItem" title="Item" image="line.3.horizontal.decrease.circle" catalog="system" id="BFZ-ai-g0l">
+                            <connections>
+                                <action selector="filter:" destination="Y6W-OH-hqX" id="6NJ-z5-fXR"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="KBn-Y8-rDH">
                             <connections>
-                                <segue destination="LKK-eO-l29" kind="show" id="b82-4s-VwV"/>
+                                <segue destination="LKK-eO-l29" kind="show" identifier="createThreadId" id="b82-4s-VwV"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="tableView" destination="dco-gt-Cna" id="qg5-6f-sKO"/>
+                        <segue destination="lmV-g1-pQz" kind="show" identifier="viewThread" id="Thv-xk-wNZ"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="985.49618320610682" y="-27.464788732394368"/>
         </scene>
-        <!--View Controller-->
+        <!--Create Thread Controller-->
         <scene sceneID="yYS-B3-sSW">
             <objects>
-                <viewController id="LKK-eO-l29" sceneMemberID="viewController">
+                <viewController id="LKK-eO-l29" customClass="CreateThreadController" customModule="SyllaBuddy" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="hgL-Ac-0vu">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -63,5 +129,27 @@
             </objects>
             <point key="canvasLocation" x="58.778625954198468" y="-27.464788732394368"/>
         </scene>
+        <!--Post View Controller-->
+        <scene sceneID="G5S-hq-SUk">
+            <objects>
+                <viewController id="lmV-g1-pQz" customClass="PostViewController" customModule="SyllaBuddy" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="zlO-0r-nJL">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="x6M-bF-ckO"/>
+                        <color key="backgroundColor" red="1" green="0.82789456839999997" blue="0.5261248946" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="xzb-dO-jDm"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Zld-hl-Sn8" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="983.96946564885491" y="726.76056338028172"/>
+        </scene>
     </scenes>
+    <resources>
+        <image name="line.3.horizontal.decrease.circle" catalog="system" width="128" height="123"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
 </document>

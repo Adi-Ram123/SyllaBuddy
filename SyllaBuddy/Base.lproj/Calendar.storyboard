@@ -25,7 +25,7 @@
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     </view>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="ePE-AK-dg7">
-                                        <rect key="frame" x="0.0" y="0.0" width="402" height="606"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="402" height="774"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <prototypes>
                                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="eventId" textLabel="3hS-9a-Wyh" detailTextLabel="eHC-cQ-u5b" style="IBUITableViewCellStyleValue2" id="Ejc-4a-0Qt">
@@ -55,7 +55,10 @@
                                         </prototypes>
                                     </tableView>
                                     <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dU1-2D-AZy">
-                                        <rect key="frame" x="0.0" y="606" width="402" height="268"/>
+                                        <rect key="frame" x="0.0" y="774" width="402" height="100"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="100" id="MjM-V8-OFC"/>
+                                        </constraints>
                                         <items>
                                             <barButtonItem title="Calendar" id="2Ey-FS-QFb"/>
                                             <barButtonItem style="plain" systemItem="flexibleSpace" id="MAZ-IO-9l4"/>
