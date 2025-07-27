@@ -84,6 +84,7 @@ class EventViewController: UIViewController, UITableViewDelegate, UITableViewDat
         if editingStyle == .delete {
             eventList.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
+            eventFound.text = "\(eventList.count) events found in \(eventList[0].eventClass)"
         }
     }
     
@@ -95,7 +96,6 @@ class EventViewController: UIViewController, UITableViewDelegate, UITableViewDat
         
         let eventDictionaries = eventList.map { $0.toDictionary() }
         
-        //I will have direct access to class with label but for now do this also update the label when I integrate
         guard let className = eventDictionaries.first?["class"] else {
             print("No class found in first event.")
             return

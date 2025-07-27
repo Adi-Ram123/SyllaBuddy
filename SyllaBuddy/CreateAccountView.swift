@@ -20,7 +20,6 @@ class CreateAccountView: UIViewController, UITextFieldDelegate {
     
     @IBOutlet weak var confirm: UITextField!
     
-    //We can change this to a dropdown later to ensure user does not mistype since it will affect post filtering
     @IBOutlet weak var uni: UITextField!
     let db = Firestore.firestore()
     
@@ -35,6 +34,9 @@ class CreateAccountView: UIViewController, UITextFieldDelegate {
         password.delegate = self
         confirm.delegate = self
         uni.delegate = self
+        password.isSecureTextEntry = true
+        confirm.isSecureTextEntry = true
+
 
         // Do any additional setup after loading the view.
     }
