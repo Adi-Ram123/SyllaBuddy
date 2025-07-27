@@ -55,7 +55,7 @@ class AccountSettingsViewController: UIViewController {
     
     @IBAction func revealPasswordTapped(_ sender: UIButton) {
         passwordHidden.toggle()
-        revealPasswordButton.setTitle(passwordHidden ? "Tap to Reveal" : "••••••••", for: .normal)
+        revealPasswordButton.setTitle(passwordHidden ? "Tap to Reveal" : "********", for: .normal)
     }
     
     @IBAction func saveDisplayNameTapped(_ sender: Any) {
@@ -65,7 +65,7 @@ class AccountSettingsViewController: UIViewController {
         }
         guard let user = Auth.auth().currentUser else { return }
         
-        db.collection("users").document(user.uid).setData(["displayName": newName], merge: true) { error in
+        db.collection("users").document(user.uid).setData(["username": newName], merge: true) { error in
             if let error = error {
                 self.showAlert(title: "Error", message: "Failed to update display name: \(error.localizedDescription)")
             } else {
@@ -81,7 +81,7 @@ class AccountSettingsViewController: UIViewController {
         }
         guard let user = Auth.auth().currentUser else { return }
         
-        db.collection("users").document(user.uid).setData(["institution": institution], merge: true) { error in
+        db.collection("users").document(user.uid).setData(["university": institution], merge: true) { error in
             if let error = error {
                 self.showAlert(title: "Error", message: "Failed to update institution: \(error.localizedDescription)")
             } else {
@@ -91,12 +91,25 @@ class AccountSettingsViewController: UIViewController {
     }
     
     private func loadUserData() {
-        guard let user = Auth.auth().currentUser else { return }
-        db.collection("users").document(user.uid).getDocument { document, _ in
-            if let document = document, document.exists {
-                let data = document.data()
-                self.displayNameTextField.text = data?["displayName"] as? String ?? ""
-                self.institutionTextField.text = data?["institution"] as? String ?? ""
+        let userEmail = Auth.auth().currentUser!.email
+        print(userEmail!)
+        
+        let collection = db.collection("User")
+        
+        collection.whereField("Email", isEqualTo: userEmail!).getDocuments
+        {
+            (querySnapshot, error) in
+            if let error = error {
+                print("Error querying user: \(error.localizedDescription)")
+            } else if let documents = querySnapshot?.documents, !documents.isEmpty {
+                let userDoc = documents[0]
+                let data = userDoc.data()
+                
+                let uni = data["University"] as! String
+                let user = data["Username"] as! String
+                
+                self.displayNameTextField.text = user
+                self.institutionTextField.text = uni
             }
         }
     }
