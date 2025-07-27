@@ -8,6 +8,11 @@
 import UIKit
 
 class CalendarView: UIViewController {
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        ThemeManager.shared.applyAll(to: self)
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()

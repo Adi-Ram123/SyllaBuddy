@@ -32,6 +32,7 @@ class LoginView: UIViewController, UITextFieldDelegate {
     override func viewWillAppear(_ animated: Bool) {
         self.email.text = ""
         self.password.text = ""
+        ThemeManager.shared.applyAll(to: self)
     }
     
     @IBAction func loginPressed(_ sender: Any) {

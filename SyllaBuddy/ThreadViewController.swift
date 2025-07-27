@@ -21,6 +21,11 @@ class ThreadViewController: UIViewController, UITableViewDelegate, UITableViewDa
     var threadListener: ListenerRegistration?
     var filteredClass: String!
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        ThemeManager.shared.applyAll(to: self)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.hidesBackButton = true

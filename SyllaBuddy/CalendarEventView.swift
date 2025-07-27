@@ -78,6 +78,10 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
     var prompt = ""
     let url = URL(string: "https://api.openai.com/v1/chat/completions")
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        ThemeManager.shared.applyAll(to: self)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()

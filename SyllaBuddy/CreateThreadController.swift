@@ -21,6 +21,11 @@ class CreateThreadController: UIViewController, UIPickerViewDelegate, UIPickerVi
     let titleInput = UITextField()
     let db = Firestore.firestore()
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        ThemeManager.shared.applyAll(to: self)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupStackView()

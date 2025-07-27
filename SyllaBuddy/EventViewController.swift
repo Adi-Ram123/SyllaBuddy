@@ -20,6 +20,11 @@ class EventViewController: UIViewController, UITableViewDelegate, UITableViewDat
     
     let cellId = "eventCell"
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        ThemeManager.shared.applyAll(to: self)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.delegate = self

@@ -26,6 +26,8 @@ class CreateAccountView: UIViewController, UITextFieldDelegate {
     
     let createId = "createSegue"
     
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         user.delegate = self
@@ -43,6 +45,7 @@ class CreateAccountView: UIViewController, UITextFieldDelegate {
         email.text = ""
         password.text = ""
         confirm.text = ""
+        ThemeManager.shared.applyAll(to: self)
     }
     
     @IBAction func accountCreation(_ sender: Any) {

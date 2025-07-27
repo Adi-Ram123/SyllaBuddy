@@ -8,13 +8,17 @@
 import UIKit
 
 class SettingsViewController: UIViewController {
-
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        ThemeManager.shared.applyAll(to: self)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Settings"
         // Do any additional setup after loading the view.
     }
-    
 
     /*
     // MARK: - Navigation

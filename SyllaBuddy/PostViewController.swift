@@ -22,6 +22,11 @@ class PostViewController: UIViewController, UITableViewDelegate, UITableViewData
     var user: String!
     var threadListener: ListenerRegistration?
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        ThemeManager.shared.applyAll(to: self)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupStackView()
