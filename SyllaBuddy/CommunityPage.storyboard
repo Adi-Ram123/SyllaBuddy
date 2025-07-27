@@ -77,7 +77,7 @@
                     <navigationItem key="navigationItem" title="Community" id="CPm-Lw-WH4">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="KBn-Y8-rDH">
                             <connections>
-                                <segue destination="LKK-eO-l29" kind="show" id="b82-4s-VwV"/>
+                                <segue destination="LKK-eO-l29" kind="show" identifier="createThreadId" id="b82-4s-VwV"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -90,10 +90,10 @@
             </objects>
             <point key="canvasLocation" x="985.49618320610682" y="-27.464788732394368"/>
         </scene>
-        <!--View Controller-->
+        <!--Create Thread Controller-->
         <scene sceneID="yYS-B3-sSW">
             <objects>
-                <viewController id="LKK-eO-l29" sceneMemberID="viewController">
+                <viewController id="LKK-eO-l29" customClass="CreateThreadController" customModule="SyllaBuddy" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="hgL-Ac-0vu">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

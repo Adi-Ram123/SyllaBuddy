@@ -16,6 +16,7 @@ class ThreadViewController: UIViewController, UITableViewDelegate, UITableViewDa
     var userClasses: [String]!
     let cellId = "threadId"
     let threadId = "viewThread"
+    let createId = "createThreadId"
     let db = Firestore.firestore()
     var threadListener: ListenerRegistration?
     
@@ -131,10 +132,14 @@ class ThreadViewController: UIViewController, UITableViewDelegate, UITableViewDa
 
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "viewThread", let nextVC = segue.destination as? PostViewController, let indexPath = tableView.indexPathForSelectedRow {
+        if segue.identifier == threadId, let nextVC = segue.destination as? PostViewController, let indexPath = tableView.indexPathForSelectedRow {
             nextVC.threadInfo = threadList[indexPath.row]
             print(threadList[indexPath.row].posts.count)
             tableView.deselectRow(at: indexPath, animated: true)
+        }
+        
+        if segue.identifier == createId, let nextVC = segue.destination as? CreateThreadController {
+            nextVC.userClasses = userClasses
         }
     }
 
