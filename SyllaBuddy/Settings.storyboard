@@ -83,12 +83,12 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="L03-7s-guo">
-                                <rect key="frame" x="0.0" y="168" width="440" height="190"/>
+                                <rect key="frame" x="0.0" y="168" width="440" height="140"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="48W-Li-0DC">
                                         <rect key="frame" x="20" y="20" width="400" height="50"/>
                                         <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Push Notifications" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jE3-Cl-1yf">
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Calendar Integration" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jE3-Cl-1yf">
                                                 <rect key="frame" x="0.0" y="10.666666666666659" width="351" height="28.666666666666671"/>
                                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
                                                 <nil key="textColor"/>
@@ -97,7 +97,7 @@
                                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="N21-tj-8kZ">
                                                 <rect key="frame" x="351" y="9.6666666666666572" width="51" height="31"/>
                                                 <connections>
-                                                    <action selector="pushSwitchToggled:" destination="H3m-A7-1Q2" eventType="valueChanged" id="58D-Sd-gFd"/>
+                                                    <action selector="calendarToggle:" destination="H3m-A7-1Q2" eventType="valueChanged" id="9xX-wf-Bqo"/>
                                                 </connections>
                                             </switch>
                                         </subviews>
@@ -108,7 +108,7 @@
                                     <stackView opaque="NO" contentMode="scaleToFill" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="NC2-Zx-whd">
                                         <rect key="frame" x="20" y="70" width="400" height="50"/>
                                         <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Homework Notifications" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bfV-7c-Wdd">
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Event Notifications" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bfV-7c-Wdd">
                                                 <rect key="frame" x="0.0" y="10.666666666666659" width="351" height="28.666666666666671"/>
                                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
                                                 <nil key="textColor"/>
@@ -117,32 +117,12 @@
                                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ezc-Md-mdf">
                                                 <rect key="frame" x="351" y="9.6666666666666572" width="51" height="31"/>
                                                 <connections>
-                                                    <action selector="homeworkSwitchToggled:" destination="H3m-A7-1Q2" eventType="valueChanged" id="LDS-zb-XBN"/>
+                                                    <action selector="eventToggle:" destination="H3m-A7-1Q2" eventType="valueChanged" id="5HB-vs-dGy"/>
                                                 </connections>
                                             </switch>
                                         </subviews>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="50" id="q3L-u0-g6T"/>
-                                        </constraints>
-                                    </stackView>
-                                    <stackView opaque="NO" contentMode="scaleToFill" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="vjt-nM-VcF">
-                                        <rect key="frame" x="20" y="120" width="400" height="50"/>
-                                        <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Exam Notifications" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9fX-rZ-brE">
-                                                <rect key="frame" x="0.0" y="10.666666666666687" width="351" height="28.666666666666671"/>
-                                                <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
-                                                <nil key="textColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="HfU-bm-eFH">
-                                                <rect key="frame" x="351" y="9.6666666666666856" width="51" height="31"/>
-                                                <connections>
-                                                    <action selector="examSwitchToggled:" destination="H3m-A7-1Q2" eventType="valueChanged" id="h5g-YS-9zN"/>
-                                                </connections>
-                                            </switch>
-                                        </subviews>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="50" id="wHj-en-B49"/>
                                         </constraints>
                                     </stackView>
                                 </subviews>
@@ -159,9 +139,8 @@
                     </view>
                     <navigationItem key="navigationItem" id="YKY-w6-UpV"/>
                     <connections>
-                        <outlet property="examSwitch" destination="HfU-bm-eFH" id="gcV-Dj-p32"/>
-                        <outlet property="homeworkSwitch" destination="Ezc-Md-mdf" id="uHI-gw-baM"/>
-                        <outlet property="pushSwitch" destination="N21-tj-8kZ" id="f4H-TW-EPE"/>
+                        <outlet property="calendarSwitch" destination="N21-tj-8kZ" id="86J-fV-ZbS"/>
+                        <outlet property="eventSwitch" destination="Ezc-Md-mdf" id="Nfo-0I-xEU"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="8XR-oJ-Y1L" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

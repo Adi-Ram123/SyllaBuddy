@@ -161,6 +161,7 @@ class AppSettingsViewController: UIViewController, UIPickerViewDelegate, UIPicke
         do {
             try Auth.auth().signOut()
             navigationController?.popToRootViewController(animated: true)
+            NotificationScheduler.clearNotifiedEvents()
         } catch {
             print("Error logging out: \(error.localizedDescription)")
         }

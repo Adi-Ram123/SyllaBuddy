@@ -731,6 +731,7 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
     //Add something where you check to see if the user still has events in the classes field. If not remove the class
     func reloadData() {
         reloadFirestoreData()
+        NotificationScheduler.notifyIfEventTodayExistsIfAuthorized()
         if let selection = calendarView.selectionBehavior as? UICalendarSelectionSingleDate,
                let selectedDateComponents = selection.selectedDate,
                let selectedDate = Calendar.current.date(from: selectedDateComponents), !toggleOn {
@@ -813,6 +814,7 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
             do {
                 try eventStore.remove(event, span: .thisEvent)
                 print("Deleted event: \(event.title ?? "") on \(dateString)")
+               
             } catch {
                 print("Failed to delete event: \(error.localizedDescription)")
             }

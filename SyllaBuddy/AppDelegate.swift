@@ -18,6 +18,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         FirebaseApp.configure()
         do {
             try Auth.auth().signOut()
+            NotificationScheduler.clearNotifiedEvents()
+            
         } catch {
             print("Sign out on termination error")
         }
