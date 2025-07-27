@@ -5,12 +5,6 @@
 //  Created by Aditya Ramaswamy on 7/12/25.
 //
 
-// Add UICalendar
-// If date selected show only events at the date
-// Implement grid view
-// Integrate API
-
-
 import UIKit
 import UniformTypeIdentifiers
 import PDFKit
@@ -19,6 +13,7 @@ import FirebaseAuth
 import EventKit
 import Vision
 
+// Structs to organize json file for parsing
 struct OpenAIResponse: Codable {
     struct Choice: Codable {
         struct Message: Codable {
@@ -34,6 +29,7 @@ struct GPTResponse: Decodable {
     let events: [Event]
 }
 
+// Protocols for updating events and event list
 protocol EventReloader {
     func reloadData()
 }
@@ -45,12 +41,11 @@ protocol EventHandler {
 
 class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableViewDelegate, UITableViewDataSource, EventReloader, EventHandler, UICalendarSelectionSingleDateDelegate, UICalendarViewDelegate {
     
-    
     @IBOutlet weak var toolbar: UIToolbar!
     @IBOutlet weak var calendar: UIView!
-    
     @IBOutlet weak var stackView: UIStackView!
     @IBOutlet weak var tableView: UITableView!
+    
     var calendarView: UICalendarView!
     let confirmSegue = "eventConfirmSegue"
     let eventId = "eventId"
@@ -60,11 +55,13 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
     let db = Firestore.firestore()
     let eventStore = EKEventStore()
     let hamburgerButton = UIButton(type: .system)
-    // Store the height constraint and natural height
+    
+    // Storing Calendar constraints to safely collapse calendar
     var calendarHeightConstraint: NSLayoutConstraint!
-    var calendarNaturalHeight: CGFloat?
+    var calendarHeight: CGFloat?
     var toggleOn = false
     
+    // Open API key
     var apiKey: String {
         if let url = Bundle.main.url(forResource: "Secrets", withExtension: "plist"),
            let dict = NSDictionary(contentsOf: url),
@@ -75,6 +72,7 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
             return ""
         }
     }
+    
     var prompt = ""
     let url = URL(string: "https://api.openai.com/v1/chat/completions")
     
@@ -84,10 +82,15 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
     }
     
     override func viewDidLoad() {
+        
         super.viewDidLoad()
+        
+        // Check if user wants to add events to calendar
         eventStore.requestFullAccessToEvents { _, _ in }
+        
         tableView.delegate = self
         tableView.dataSource = self
+        
         self.navigationItem.hidesBackButton = true
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
@@ -98,101 +101,105 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
         
+        // Collapse calendar button
         hamburgerButton.setImage(UIImage(systemName: "line.horizontal.3"), for: .normal)
         hamburgerButton.tintColor = .systemBlue
-
-        // Bigger button size for clear outline
         let size: CGFloat = 44
         hamburgerButton.frame = CGRect(x: 0, y: 0, width: size, height: size)
-        
         toggleOn = false
-
-        
-
         hamburgerButton.addTarget(self, action: #selector(hamburgerPressed), for: .touchUpInside)
-
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: hamburgerButton)
         
-        createCalendarLayout() //May need to move to viewDidLoad
-        
-        
+        //Programatically set up the view
+        createCalendarLayout()
         reloadData()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
-            if calendarHeightConstraint == nil {
-                calendarNaturalHeight = calendar.frame.height
-                calendarHeightConstraint = calendar.heightAnchor.constraint(equalToConstant: calendarNaturalHeight!)
-                calendarHeightConstraint.isActive = true
-            }
+        if calendarHeightConstraint == nil {
+            calendarHeight = calendar.frame.height
+            calendarHeightConstraint = calendar.heightAnchor.constraint(equalToConstant: calendarHeight!)
+            calendarHeightConstraint.isActive = true
+        }
     }
     
+    // Either collapse or expand the calendar
     @objc func hamburgerPressed() {
         toggleOn = !toggleOn
-                if toggleOn {
-                    // Collapse calendar: set height to zero
-                    calendarHeightConstraint.constant = 0
-                    hamburgerButton.layer.borderColor = UIColor.systemBlue.cgColor
-                    hamburgerButton.layer.borderWidth = 2
-                    hamburgerButton.layer.cornerRadius = 4
-                    hamburgerButton.clipsToBounds = true
-                    displayedEvents = eventList
-                    reloadData()
-                } else {
-                    // Expand calendar: restore natural height
-                    calendarHeightConstraint.constant = calendarNaturalHeight!
-                    hamburgerButton.layer.borderColor = nil
-                    hamburgerButton.layer.borderWidth = 0
-                    hamburgerButton.layer.cornerRadius = 0
-                    hamburgerButton.clipsToBounds = false
-                    
-                    //Look back at date formatter method potentially
-                    let today = Date()
-                    let formatter = DateFormatter()
-                    formatter.dateFormat = "MM-dd-yyyy"
-                    formatter.locale = Locale(identifier: "en_US_POSIX")
-                    formatter.timeZone = TimeZone.current
-                    let todayString = formatter.string(from: today)
-                    reloadDisplayData(dateString: todayString)
-                    let calendarDate = Calendar.current.dateComponents([.year, .month, .day], from: today)
-                    if let selection = calendarView.selectionBehavior as? UICalendarSelectionSingleDate {
-                        selection.setSelected(calendarDate, animated: true)
-                    }
-                }
+            if toggleOn {
+                // Collapse calendar
+                calendarHeightConstraint.constant = 0
+                hamburgerButton.layer.borderColor = UIColor.systemBlue.cgColor
+                hamburgerButton.layer.borderWidth = 2
+                hamburgerButton.layer.cornerRadius = 4
+                hamburgerButton.clipsToBounds = true
+                displayedEvents = eventList
+                reloadData()
+            } else {
+                // Expand Calendar
+                calendarHeightConstraint.constant = calendarHeight!
+                hamburgerButton.layer.borderColor = nil
+                hamburgerButton.layer.borderWidth = 0
+                hamburgerButton.layer.cornerRadius = 0
+                hamburgerButton.clipsToBounds = false
+                
+                // Select the current date
+                let todayString = selectToday(on: calendarView, animated: true)
+                reloadDisplayData(dateString: todayString)
+            }
 
-                // Animate the height change
-                UIView.animate(withDuration: 0.3) {
-                    self.view.layoutIfNeeded()
-                }
+            // Animation to expand or collapse view
+            UIView.animate(withDuration: 0.3) {
+                self.view.layoutIfNeeded() //update view
+            }
         
     }
     
-    //Mess around with margins later (Doing the layout programatically)
+    // Helper method to select the current day on calendar
+    func selectToday(on calendarView: UICalendarView, animated: Bool) -> String {
+        let today = Date()
+        
+        // Format date as MM-dd-yyyy
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM-dd-yyyy"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone.current
+        let todayString = formatter.string(from: today)
+        
+        // Select today in the calendar
+        let calendarDate = Calendar.current.dateComponents([.year, .month, .day], from: today)
+        if let selection = calendarView.selectionBehavior as? UICalendarSelectionSingleDate {
+            selection.setSelected(calendarDate, animated: animated)
+        }
+        
+        return todayString
+    }
+    
+    // Programatically setup layout
     func createCalendarLayout() {
-        // Disable autoresizing mask for views to use Auto Layout
+        // Get rid of auto layout
         calendar.translatesAutoresizingMaskIntoConstraints = false
         tableView.translatesAutoresizingMaskIntoConstraints = false
         toolbar.translatesAutoresizingMaskIntoConstraints = false
         stackView.translatesAutoresizingMaskIntoConstraints = false
-            
-        // Set backgrounds transparent except toolbar and container
+    
+        // Setting elements to transparent
         calendar.backgroundColor = .clear
         stackView.backgroundColor = .clear
         tableView.backgroundColor = .clear
         
-        // Toolbar fixed height (enough space for image buttons)
+        // Giving space to show toolbar images
         toolbar.heightAnchor.constraint(equalToConstant: 100).isActive = true
             
-        // Container to hold calendar view with rounded corners and white background
+        // Round calendar
         let container = UIView()
         container.translatesAutoresizingMaskIntoConstraints = false
         container.backgroundColor = .white  // keep white for visible rounded corners
         container.layer.cornerRadius = 15
         container.layer.masksToBounds = true  // clip inside corners
             
-        // Shadow container to hold container and apply shadow
+        // Apply shadow on calendar
         let shadowContainer = UIView()
         shadowContainer.translatesAutoresizingMaskIntoConstraints = false
         shadowContainer.backgroundColor = .clear
@@ -201,10 +208,8 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
         shadowContainer.layer.shadowOffset = CGSize(width: 0, height: 3)
         shadowContainer.layer.shadowRadius = 6
         shadowContainer.layer.masksToBounds = false
-            
         calendar.addSubview(shadowContainer)
         shadowContainer.addSubview(container)
-            
         NSLayoutConstraint.activate([
             shadowContainer.leadingAnchor.constraint(equalTo: calendar.leadingAnchor, constant: 20),
             shadowContainer.trailingAnchor.constraint(equalTo: calendar.trailingAnchor, constant: -20),
@@ -217,7 +222,7 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
             container.bottomAnchor.constraint(equalTo: shadowContainer.bottomAnchor)
         ])
             
-        // Create and add UICalendarView inside container
+        // Set up the acutal calendar
         calendarView = UICalendarView()
         calendarView.translatesAutoresizingMaskIntoConstraints = false
         calendarView.calendar = .current
@@ -226,43 +231,30 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
         calendarView.backgroundColor = .clear
         calendarView.delegate = self
         calendarView.selectionBehavior = UICalendarSelectionSingleDate(delegate: self)
-        
-        //Look back at date formatter method potentially
-        let today = Date()
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MM-dd-yyyy"
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.timeZone = TimeZone.current
-        let todayString = formatter.string(from: today)
-        if let selection = calendarView.selectionBehavior as? UICalendarSelectionSingleDate {
-            let todayComponents = Calendar.current.dateComponents([.year, .month, .day], from: today)
-            selection.setSelected(todayComponents, animated: false)
-        }
-            
         container.addSubview(calendarView)
-            
         NSLayoutConstraint.activate([
             calendarView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
             calendarView.trailingAnchor.constraint(equalTo: container.trailingAnchor),
             calendarView.topAnchor.constraint(equalTo: container.topAnchor),
             calendarView.bottomAnchor.constraint(equalTo: container.bottomAnchor)
         ])
-            
-        // TableView fixed height for 5 rows (~50 height each)
+        
+        // Select todays date
+        _ = selectToday(on: calendarView, animated: true)
+        
+        // Doing some math to calculate table height
         let rowHeight: CGFloat = 50
         let numberOfRows: CGFloat = 4
         let tableHeight = rowHeight * numberOfRows
         tableView.heightAnchor.constraint(equalToConstant: tableHeight).isActive = true
             
-        // Stack view pinned to safe area with vertical padding and edges
+        // Pinning stackview and setting up settings
         NSLayoutConstraint.activate([
             stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
             stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             stackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
-            
-        // Stack view properties with layout margins enabled
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.distribution = .fill
@@ -274,106 +266,112 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
     func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate dateComponents: DateComponents?) {
         reloadData()
     }
-
     
-    
-    //FUNCTION IS HUGE MAKE SOME HELPER METHODS AND CLEAN IT UP
+    // Add button to make an event
     @IBAction func createEvent(_ sender: Any) {
         let sheet = UIAlertController(title: "Add Event", message: "Choose how to add an event", preferredStyle: .actionSheet)
         
-        let manual = UIAlertAction(title: "Add Manually", style: .default) { _ in
-            let alert = UIAlertController(title: "Add Event", message: nil, preferredStyle: .alert)
-            
-            alert.addTextField { textField in
-                textField.placeholder = "Class"
-            }
-            
-            alert.addTextField { textField in
-                textField.placeholder = "Event"
-            }
-            
-            alert.addTextField { textField in
-                textField.placeholder = "MM-DD-YYYY"
-                textField.keyboardType = .numbersAndPunctuation
-            }
-            
-            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-            
-            alert.addAction(UIAlertAction(title: "Add", style: .default, handler: { _ in
-                guard let newClass = alert.textFields?[0].text?.trimmingCharacters(in: .whitespacesAndNewlines),
-                      let newEvent = alert.textFields?[1].text?.trimmingCharacters(in: .whitespacesAndNewlines),
-                      let dateString = alert.textFields?[2].text?.trimmingCharacters(in: .whitespacesAndNewlines),
-                      !newClass.isEmpty, !newEvent.isEmpty, !dateString.isEmpty else {
-                    
-                    let missingInputAlert = UIAlertController(title: "Missing Input", message: "Please fill out all fields before adding the event.", preferredStyle: .alert)
-                    missingInputAlert.addAction(UIAlertAction(title: "OK", style: .default))
-                    self.present(missingInputAlert, animated: true)
-                    return
-                }
-                
-                // Check if event already exists locally (silent skip)
-                let exists = self.eventList.contains {
-                    $0.event == newEvent && $0.date == dateString && $0.eventClass == newClass
-                }
-                if exists {
-                    // Duplicate found, do not add or alert, just return silently
-                    return
-                }
-                
-                let formatter = DateFormatter()
-                formatter.dateFormat = "MM-dd-yyyy"
-                formatter.locale = Locale(identifier: "en_US_POSIX")
-                formatter.timeZone = TimeZone.current
-
-                guard let _ = formatter.date(from: dateString) else {
-                    let errorAlert = UIAlertController(title: "Invalid Date", message: "Please enter the date in MM-dd-yyyy format (e.g. 06-18-2025).", preferredStyle: .alert)
-                    errorAlert.addAction(UIAlertAction(title: "OK", style: .default))
-                    self.present(errorAlert, animated: true)
-                    return
-                }
-
-                // Date is valid, proceed
-                let addEvent = Event(date: dateString, event: newEvent, eventClass: newClass)
-                self.eventList.append(addEvent)
-                
-                let userEmail = Auth.auth().currentUser!.email
-                
-                let eventDictionaries = self.eventList.map { $0.toDictionary() }
-                let collection = self.db.collection("User")
-                
-                collection.whereField("Email", isEqualTo: userEmail!).getDocuments { (querySnapshot, error) in
-                    guard let document = querySnapshot?.documents.first else { return }
-                    document.reference.updateData([
-                        "Events": eventDictionaries,
-                        "Classes": FieldValue.arrayUnion([newClass])
-                    ]) { error in
-                        if let error = error {
-                            self.makePopup(popupTitle: "Event Error", popupMessage: "Error in creating event")
-                        } else {
-                            self.makePopup(popupTitle: "Event Creation", popupMessage: "Succesfully created event")
-                            self.createCalendarEvent(title: newEvent, date: dateString)
-                            self.reloadData()
-                        }
-                    }
-                }
-            }))
-            
-            self.present(alert, animated: true)
-        }
-        
-        let upload = UIAlertAction(title: "Upload PDF", style: .default) { _ in
+        sheet.addAction(UIAlertAction(title: "Add Manually", style: .default) { _ in
+            self.manualAddEventOption()
+        })
+        sheet.addAction(UIAlertAction(title: "Upload PDF", style: .default) { _ in
             self.pdfUpload()
-        }
-        
-        let cancel = UIAlertAction(title: "Cancel", style: .cancel)
-        
-        sheet.addAction(manual)
-        sheet.addAction(upload)
-        sheet.addAction(cancel)
+        })
+        sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         
         present(sheet, animated: true)
     }
     
+    // Helper to handle adding events manually (shows the alert)
+    private func manualAddEventOption() {
+        let alert = UIAlertController(title: "Add Event", message: nil, preferredStyle: .alert)
+        
+        alert.addTextField { $0.placeholder = "Class" }
+        alert.addTextField { $0.placeholder = "Event" }
+        alert.addTextField {
+            $0.placeholder = "MM-DD-YYYY"
+            $0.keyboardType = .numbersAndPunctuation
+        }
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        
+        alert.addAction(UIAlertAction(title: "Add", style: .default) { _ in
+            self.manualAddEvent(from: alert)
+        })
+        
+        present(alert, animated: true)
+    }
+    
+    // Actually adds the event
+    private func manualAddEvent(from alert: UIAlertController) {
+        guard
+            let newClass = alert.textFields?[0].text?.trimmingCharacters(in: .whitespacesAndNewlines),
+            let newEvent = alert.textFields?[1].text?.trimmingCharacters(in: .whitespacesAndNewlines),
+            let dateString = alert.textFields?[2].text?.trimmingCharacters(in: .whitespacesAndNewlines),
+            !newClass.isEmpty, !newEvent.isEmpty, !dateString.isEmpty
+        else {
+            presentAlert(title: "Missing Input", message: "Please fill out all fields before adding the event.")
+            return
+        }
+        
+        // Check for duplicates silently
+        if eventList.contains(where: { $0.event == newEvent && $0.date == dateString && $0.eventClass == newClass }) {
+            return
+        }
+        
+        guard isValidDate(dateString) else {
+            presentAlert(title: "Invalid Date", message: "Please enter the date in MM-dd-yyyy format (e.g. 06-18-2025).")
+            return
+        }
+        
+        addToFirestore(eventClass: newClass, event: newEvent, dateString: dateString)
+    }
+    
+    // Helepr to ensure that the date is correct
+    private func isValidDate(_ dateString: String) -> Bool {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM-dd-yyyy"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone.current
+        return formatter.date(from: dateString) != nil
+    }
+    
+    // After validation add the event to firestore
+    private func addToFirestore(eventClass: String, event: String, dateString: String) {
+        let newEvent = Event(date: dateString, event: event, eventClass: eventClass)
+        eventList.append(newEvent)
+        
+        guard let userEmail = Auth.auth().currentUser?.email else { return }
+        
+        let eventDictionaries = eventList.map { $0.toDictionary() }
+        let collection = db.collection("User")
+        
+        collection.whereField("Email", isEqualTo: userEmail).getDocuments { snapshot, error in
+            guard let document = snapshot?.documents.first else { return }
+            
+            document.reference.updateData([
+                "Events": eventDictionaries,
+                "Classes": FieldValue.arrayUnion([eventClass])
+            ]) { error in
+                if error != nil {
+                    self.presentAlert(title: "Event Error", message: "Error in creating event")
+                } else {
+                    self.presentAlert(title: "Event Creation", message: "Successfully created event")
+                    self.createCalendarEvent(title: event, date: dateString)
+                    self.reloadData()
+                }
+            }
+        }
+    }
+    
+    // Helper to present alerts
+    private func presentAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+    
+    // Get the pdf selection from user
     func pdfUpload() {
         let supportedTypes: [UTType] = [UTType.pdf]
         let picker = UIDocumentPickerViewController(forOpeningContentTypes: supportedTypes, asCopy: true)
@@ -382,32 +380,64 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
         present(picker, animated: true)
     }
     
-    func stripMarkdownCodeFence(from text: String) -> String {
-        var trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
-            
-            // Remove starting fence (``` or ```json)
-            if trimmed.hasPrefix("```json") {
-                trimmed = String(trimmed.dropFirst("```json".count))
-            } else if trimmed.hasPrefix("```") {
-                trimmed = String(trimmed.dropFirst(3))
+    // Select the PDF and call API to generate the events
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        
+        //PDF selection
+        pdfList = [Event]()
+        guard let selectedURL = urls.first else { return }
+        guard selectedURL.startAccessingSecurityScopedResource() else {
+            makePopup(popupTitle: "PDF Error", popupMessage: "Error in reading PDF")
+            return
+        }
+        defer { selectedURL.stopAccessingSecurityScopedResource() }
+        let fileExtension = selectedURL.pathExtension.lowercased()
+        
+        if fileExtension == "pdf" {
+            let extractedText = extractTextFromPDF(url: selectedURL)
+            self.callChatGPT(with: extractedText) { result in
+                switch result {
+                    // API succeded in finding events perform segue
+                    case .success(let gptResponse):
+                        if gptResponse.events.isEmpty {
+                            DispatchQueue.main.async {
+                                self.makePopup(popupTitle: "PDF Error", popupMessage: "No Events were found")
+                            }
+                            return
+                        }
+                        let course = gptResponse.course
+                        for event in gptResponse.events {
+                            let newEvent = Event(date: event.date, event: event.event, eventClass: course)
+                            self.pdfList.append(newEvent)
+                        }
+                        DispatchQueue.main.async {
+                            self.performSegue(withIdentifier: self.confirmSegue, sender: self)
+                        }
+                    
+                    //API failed create error message
+                    case .failure(let error):
+                        DispatchQueue.main.async {
+                            self.makePopup(popupTitle: "PDF Error", popupMessage: "Error in finding events")
+                        }
+                        //print("Error calling GPT: \(error)")
+                }
             }
-            
-            // Remove trailing fence ```
-            if trimmed.hasSuffix("```") {
-                trimmed = String(trimmed.dropLast(3))
-            }
-            
-            // Trim again in case of leftover whitespace/newlines
-            return trimmed.trimmingCharacters(in: .whitespacesAndNewlines)
+        } else {
+            print("Unsupported file type.")
+        }
     }
     
+    // API call (has a completion handler to ensure that everything waits until gpt has finished parsing)
     func callChatGPT(with text: String, completion: @escaping (Result<GPTResponse, Error>) -> Void) {
+        
+        // Validate url
         guard let url = url else { return }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
+        // Prompt
         let prompt = """
         Extract the course number (like CS 371L) and all assignments, exams, and major deadlines from the following syllabus text.
         
@@ -443,24 +473,24 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
             "temperature": 0.2
         ]
         
+        // Convert response to JSON
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
         
+        //Parse the JSON
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
                if let error = error {
                    completion(.failure(error))
                    return
                }
-               
                guard let data = data else {
                    completion(.failure(NSError(domain: "No data", code: 0)))
                    return
                }
-               
                do {
                    let decoded = try JSONDecoder().decode(OpenAIResponse.self, from: data)
                    let content = decoded.choices.first?.message.content ?? ""
                    
-                   let cleanedContent = self.stripMarkdownCodeFence(from: content)
+                   let cleanedContent = self.cleanJSON(from: content)
                    //print("Cleaned content:\n\(cleanedContent)")
                    
                    if let jsonData = cleanedContent.data(using: .utf8) {
@@ -473,10 +503,26 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
                    completion(.failure(error))
                }
            }
-
         task.resume()
     }
     
+    // Helper to clean up Json file for parsing
+    func cleanJSON(from text: String) -> String {
+        var trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.hasPrefix("```json") {
+            trimmed = String(trimmed.dropFirst("```json".count))
+        } else if trimmed.hasPrefix("```") {
+            trimmed = String(trimmed.dropFirst(3))
+        }
+            
+        if trimmed.hasSuffix("```") {
+            trimmed = String(trimmed.dropLast(3))
+        }
+            
+        return trimmed.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+    
+    // Helper to get text from PDF
     func extractTextFromPDF(url: URL) -> String {
         guard let doc = PDFDocument(url: url) else { return ""}
         var result = ""
@@ -484,102 +530,6 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
             result += doc.page(at: i)?.string ?? ""
         }
         return result
-    }
-    
-    func extractTextFromImage(_ image: UIImage, completion: @escaping (String) -> Void) {
-        guard let cgImage = image.cgImage else {
-            completion("")
-            return
-        }
-        
-        let request = VNRecognizeTextRequest { request, error in
-            var result = ""
-            for observation in request.results as? [VNRecognizedTextObservation] ?? [] {
-                if let text = observation.topCandidates(1).first {
-                    result += text.string + "\n"
-                }
-            }
-            completion(result)
-        }
-        
-        request.recognitionLevel = .accurate
-        let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
-        try? handler.perform([request])
-    }
-    
-    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        pdfList = [Event]()
-        guard let selectedURL = urls.first else { return }
-
-            guard selectedURL.startAccessingSecurityScopedResource() else {
-                makePopup(popupTitle: "PDF Error", popupMessage: "Error in reading PDF")
-                return
-            }
-            defer { selectedURL.stopAccessingSecurityScopedResource() }
-
-            let fileExtension = selectedURL.pathExtension.lowercased()
-
-            if fileExtension == "pdf" {
-                let extractedText = extractTextFromPDF(url: selectedURL)
-                self.callChatGPT(with: extractedText) { result in
-                    switch result {
-                    case .success(let gptResponse):
-                        if gptResponse.events.isEmpty {
-                            DispatchQueue.main.async {
-                                self.makePopup(popupTitle: "PDF Error", popupMessage: "No Events were found")
-                            }
-                            return
-                        }
-                        
-                        let course = gptResponse.course
-                        for event in gptResponse.events {
-                            let newEvent = Event(date: event.date, event: event.event, eventClass: course)
-                            self.pdfList.append(newEvent)
-                        }
-                        
-                        DispatchQueue.main.async {
-                            self.performSegue(withIdentifier: self.confirmSegue, sender: self)
-                        }
-
-                    case .failure(let error):
-                        DispatchQueue.main.async {
-                            self.makePopup(popupTitle: "PDF Error", popupMessage: "Error in finding events")
-                        }
-                        //print("Error calling GPT: \(error)")
-                    }
-                }
-
-            } else if ["png", "jpg", "jpeg"].contains(fileExtension) {
-                if let image = UIImage(contentsOfFile: selectedURL.path) {
-                    extractTextFromImage(image) { extractedText in
-                        self.callChatGPT(with: extractedText) { result in
-                            switch result {
-                            case .success(let gptResponse):
-                                if gptResponse.events.isEmpty {
-                                    return
-                                }
-                                
-                                let course = gptResponse.course
-                                for event in gptResponse.events {
-                                    let newEvent = Event(date: event.date, event: event.event, eventClass: course)
-                                    self.pdfList.append(newEvent)
-                                }
-
-                                DispatchQueue.main.async {
-                                    self.performSegue(withIdentifier: self.confirmSegue, sender: self)
-                                }
-
-                            case .failure(let error):
-                                print("Failed \(error.localizedDescription)")
-                            }
-                        }
-                    }
-                } else {
-                    print("Couldn't load image.")
-                }
-            } else {
-                print("Unsupported file type.")
-            }
     }
 
     func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
@@ -597,6 +547,7 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
         return cell
     }
     
+    // Handles deleting events from table
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             let delete = displayedEvents[indexPath.row]
@@ -643,12 +594,12 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
         }
     }
     
+    // Reload database
     func reloadFirestoreData() {
         eventList = [Event]()
         let user = Auth.auth().currentUser
         let userEmail = Auth.auth().currentUser!.email
 
-        
         let collection = db.collection("User")
         
         collection.whereField("Email", isEqualTo: userEmail!).getDocuments
@@ -679,40 +630,38 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
         }
     }
     
+    // Reload local array
     func reloadDisplayData(dateString: String) {
-        displayedEvents = [] // Clear previous data
+        displayedEvents = []
+        let userEmail = Auth.auth().currentUser!.email
+        let collection = db.collection("User")
             
-            let userEmail = Auth.auth().currentUser!.email
-            let collection = db.collection("User")
-            
-            collection.whereField("Email", isEqualTo: userEmail!).getDocuments { (querySnapshot, error) in
-                if let error = error {
-                    print("Error fetching user: \(error.localizedDescription)")
-                    return
-                }
+        collection.whereField("Email", isEqualTo: userEmail!).getDocuments { (querySnapshot, error) in
+            if let error = error {
+                print("Error fetching user: \(error.localizedDescription)")
+                return
+            }
                 
-                guard let document = querySnapshot?.documents.first else {
-                    print("No user document found")
-                    return
-                }
+            guard let document = querySnapshot?.documents.first else {
+                print("No user document found")
+                return
+            }
                 
-                if let eventsArray = document.data()["Events"] as? [[String: Any]] {
-                    for dict in eventsArray {
-                        if let event = dict["event"] as? String,
-                           let date = dict["date"] as? String,
-                           let className = dict["class"] as? String {
+            if let eventsArray = document.data()["Events"] as? [[String: Any]] {
+                for dict in eventsArray {
+                    if let event = dict["event"] as? String,
+                        let date = dict["date"] as? String,
+                        let className = dict["class"] as? String {
                             
-                            if date == dateString {
-                                let matchedEvent = Event(date: date, event: event, eventClass: className)
-                                self.displayedEvents.append(matchedEvent)
-                            }
+                        if date == dateString {
+                            let matchedEvent = Event(date: date, event: event, eventClass: className)
+                            self.displayedEvents.append(matchedEvent)
                         }
                     }
-                    self.tableView.reloadData()
                 }
+                self.tableView.reloadData()
             }
-        
-        
+        }
     }
     
     func reloadData() {
@@ -721,7 +670,6 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
         if let selection = calendarView.selectionBehavior as? UICalendarSelectionSingleDate,
                let selectedDateComponents = selection.selectedDate,
                let selectedDate = Calendar.current.date(from: selectedDateComponents), !toggleOn {
-                
                 let formatter = DateFormatter()
                 formatter.dateFormat = "MM-dd-yyyy"
                 let dateString = formatter.string(from: selectedDate)
@@ -732,8 +680,7 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
         }
     }
     
-    
-    
+    // Creates events on local calendar
     func createCalendarEvent(title: String, date: String) {
         let status = EKEventStore.authorizationStatus(for: .event)
         guard status == .fullAccess else {
@@ -757,6 +704,7 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
         do {
             try eventStore.save(event, span: .thisEvent)
         } catch {
+            
         }
     }
     
@@ -780,18 +728,15 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
         let calendar = Calendar.current
         let endDate = calendar.startOfDay(for: calendar.date(byAdding: .day, value: 1, to: startDate)!)
         
-        // Create predicate to search events on the date range
+        // Essentially just fetch the event that is at the given date
         let predicate = eventStore.predicateForEvents(withStart: startDate, end: endDate, calendars: nil)
-        
         let events = eventStore.events(matching: predicate)
         
-        // Find events with matching title
-        let eventsToDelete = events.filter { $0.title == title }
         
-        for event in eventsToDelete {
+        // Filter the event to specifically the one I want to delete
+        if let eventToDelete = events.first(where: { $0.title == title }) {
             do {
-                try eventStore.remove(event, span: .thisEvent)
-               
+                try eventStore.remove(eventToDelete, span: .thisEvent)
             } catch {
                 print("Failed to delete event: \(error.localizedDescription)")
             }
@@ -805,6 +750,7 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
         }
     }
     
+    // Helper to make simple popup alerts
     func makePopup(popupTitle:String, popupMessage:String) {
         let controller = UIAlertController(
             title: popupTitle,
