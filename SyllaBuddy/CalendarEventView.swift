@@ -17,6 +17,22 @@ import PDFKit
 import FirebaseFirestore
 import FirebaseAuth
 import EventKit
+import Vision
+
+struct OpenAIResponse: Codable {
+    struct Choice: Codable {
+        struct Message: Codable {
+            let content: String
+        }
+        let message: Message
+    }
+    let choices: [Choice]
+}
+
+struct GPTResponse: Decodable {
+    let course: String
+    let events: [Event]
+}
 
 protocol EventReloader {
     func reloadData()
@@ -47,11 +63,25 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
     // Store the height constraint and natural height
     var calendarHeightConstraint: NSLayoutConstraint!
     var calendarNaturalHeight: CGFloat?
-    
     var toggleOn = false
+    
+    var apiKey: String {
+        if let url = Bundle.main.url(forResource: "Secrets", withExtension: "plist"),
+           let dict = NSDictionary(contentsOf: url),
+           let key = dict["OpenAIAPIKey"] as? String {
+            return key
+        } else {
+            print("Failed to load API key from Secrets.plist")
+            return ""
+        }
+    }
+    var prompt = ""
+    let url = URL(string: "https://api.openai.com/v1/chat/completions")
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        print("API Key: \(apiKey)")
         eventStore.requestFullAccessToEvents { _, _ in }
         tableView.delegate = self
         tableView.dataSource = self
@@ -354,69 +384,202 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
         present(picker, animated: true)
     }
     
-    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        guard let selectedURL = urls.first else { return }
-        // Load PDF document
-        pdfList = [Event]()
-        if let pdfDocument = PDFDocument(url: selectedURL) {
-            var fullText = ""
-            // Extract text from each page
-            for pageIndex in 0..<pdfDocument.pageCount {
-                if let page = pdfDocument.page(at: pageIndex), let pageText = page.string {
-                    fullText += pageText + "\n"
-                }
-            }
-            print("Extracted PDF text:\n\(fullText)")
-            let pairs = extractEventDatePairs(from: fullText)
-            if pairs.isEmpty {
-                // No events found - show alert and do not segue
-                let alert = UIAlertController(title: "No Events Found", message: "No events were found in the syllabus", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default))
-                present(alert, animated: true)
-                return
-            }
-            for (date, event) in pairs {
-                print("Date: \(date)\tEvent: \(event)")
-                //Change this
-                let event = Event(date: date, event: event, eventClass: "CS371")
-                pdfList.append(event)
-                print("pdfList append")
-            }
-            performSegue(withIdentifier: confirmSegue, sender: self)
-        } else {
-            print("Failed to load PDF document.")
+    func stripMarkdownCodeFence(from text: String) -> String {
+        var cleaned = text
+
+        if cleaned.hasPrefix("```json") {
+            cleaned = String(cleaned.dropFirst("```json".count))
+        } else if cleaned.hasPrefix("```") {
+            cleaned = String(cleaned.dropFirst("```".count))
         }
+
+        if cleaned.hasSuffix("```") {
+            cleaned = String(cleaned.dropLast(3))
+        }
+
+        return cleaned.trimmingCharacters(in: .whitespacesAndNewlines)
     }
     
-    func extractEventDatePairs(from text: String) -> [(date: String, event: String)] {
-        let months = "(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t)?(?:ember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)"
-            let datePattern = #"\b\#(months) \d{1,2}\b"#
+    func callChatGPT(with text: String, completion: @escaping (Result<GPTResponse, Error>) -> Void) {
+        guard let url = url else { return }
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.addValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let prompt = """
+        Extract the course number (like CS 371L) and all assignments, exams, and major deadlines from the following syllabus text.
+        
+        Return the result like a JSON object with two keys:
+        - "course": a string with the course number (e.g., "CS 371L")
+        - "events": an array of objects where each has a "event" and a "date" (formatted as MM-dd-YYYY)
+        
+        Date Handling Instructions:
+        - If the exact month or year of an event is unclear, assume the current month and year based on today's date.
+        - If only a day is mentioned (e.g., "Project due on 15th"), format it as MM-dd-YYYY using today's month and year.
+        - The "eventClass" field in each event should be set to the same string as the top-level "course".
 
-            guard let dateRegex = try? NSRegularExpression(pattern: datePattern, options: .caseInsensitive) else {
-                return []
+        
+        Example:
+        {
+            "course": "CS 371L",
+            "events": [
+                { "event": "Project 1 Due", "date": "06-13-2025", "eventClass": "CS 371L" },
+                { "event": "Midterm Exam", "date": "07-02-2025", "eventClass": "CS 371L" }
+            ]
+        }
+        
+        Syllabus Text:
+        \(text.prefix(6000)) // Safety cap to avoid any API limitations
+        """
+        
+        let body: [String: Any] = [
+            "model": "gpt-4o-mini",
+            "messages": [
+                ["role": "system", "content": "You are an assistant that extracts structured academic deadlines."],
+                ["role": "user", "content": prompt]
+            ],
+            "temperature": 0.2
+        ]
+        
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+               if let error = error {
+                   completion(.failure(error))
+                   return
+               }
+               
+               guard let data = data else {
+                   completion(.failure(NSError(domain: "No data", code: 0)))
+                   return
+               }
+               
+               do {
+                   let decoded = try JSONDecoder().decode(OpenAIResponse.self, from: data)
+                   let content = decoded.choices.first?.message.content ?? ""
+                   
+                   print("Raw GPT content:\n\(content)")
+                   let cleanedContent = self.stripMarkdownCodeFence(from: content)
+                   print("Cleaned content:\n\(cleanedContent)")
+                   
+                   if let jsonData = cleanedContent.data(using: .utf8) {
+                       let parsed = try JSONDecoder().decode(GPTResponse.self, from: jsonData)
+                       completion(.success(parsed))
+                   } else {
+                       completion(.failure(NSError(domain: "Content not decodable", code: 0)))
+                   }
+               } catch {
+                   completion(.failure(error))
+               }
+           }
+
+        task.resume()
+    }
+    
+    func extractTextFromPDF(url: URL) -> String {
+        guard let doc = PDFDocument(url: url) else { return ""}
+        var result = ""
+        for i in 0..<doc.pageCount {
+            result += doc.page(at: i)?.string ?? ""
+        }
+        return result
+    }
+    
+    func extractTextFromImage(_ image: UIImage, completion: @escaping (String) -> Void) {
+        guard let cgImage = image.cgImage else {
+            completion("")
+            return
+        }
+        
+        let request = VNRecognizeTextRequest { request, error in
+            var result = ""
+            for observation in request.results as? [VNRecognizedTextObservation] ?? [] {
+                if let text = observation.topCandidates(1).first {
+                    result += text.string + "\n"
+                }
             }
+            completion(result)
+        }
+        
+        request.recognitionLevel = .accurate
+        let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+        try? handler.perform([request])
+    }
+    
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        pdfList = [Event]()
+        guard let selectedURL = urls.first else { return }
 
-            var results: [(String, String)] = []
-            let lines = text.components(separatedBy: .newlines)
+            guard selectedURL.startAccessingSecurityScopedResource() else {
+                print("Couldn't access file.")
+                return
+            }
+            defer { selectedURL.stopAccessingSecurityScopedResource() }
 
-            for line in lines {
-                let nsrange = NSRange(line.startIndex..., in: line)
-                let matches = dateRegex.matches(in: line, options: [], range: nsrange)
-                if matches.isEmpty {
-                    continue
+            let fileExtension = selectedURL.pathExtension.lowercased()
+
+            if fileExtension == "pdf" {
+                let extractedText = extractTextFromPDF(url: selectedURL)
+                self.callChatGPT(with: extractedText) { result in
+                    switch result {
+                    case .success(let gptResponse):
+                        if gptResponse.events.isEmpty {
+                            print("No events found.")
+                            return
+                        }
+                        
+                        let course = gptResponse.course
+                        for event in gptResponse.events {
+                            print("Date: \(event.date)\tEvent: \(event.event)")
+                            print("BEFORE CREATING EVENT")
+                            let newEvent = Event(date: event.date, event: event.event, eventClass: course)
+                            print(newEvent)
+                            self.pdfList.append(newEvent)
+                        }
+                        
+                        DispatchQueue.main.async {
+                            self.performSegue(withIdentifier: self.confirmSegue, sender: self)
+                        }
+
+                    case .failure(let error):
+                        print("Error calling GPT: \(error)")
+                    }
                 }
 
-                let dates = matches.compactMap { match -> String? in
-                    guard let range = Range(match.range, in: line) else { return nil }
-                    return String(line[range])
+            } else if ["png", "jpg", "jpeg"].contains(fileExtension) {
+                if let image = UIImage(contentsOfFile: selectedURL.path) {
+                    extractTextFromImage(image) { extractedText in
+                        self.callChatGPT(with: extractedText) { result in
+                            switch result {
+                            case .success(let gptResponse):
+                                if gptResponse.events.isEmpty {
+                                    print("No events found.")
+                                    return
+                                }
+                                
+                                let course = gptResponse.course
+                                for event in gptResponse.events {
+                                    print("Date: \(event.date)\tEvent: \(event.event)")
+                                    let newEvent = Event(date: event.date, event: event.event, eventClass: course)
+                                    self.pdfList.append(newEvent)
+                                }
+
+                                DispatchQueue.main.async {
+                                    self.performSegue(withIdentifier: self.confirmSegue, sender: self)
+                                }
+
+                            case .failure(let error):
+                                print("Error calling GPT: \(error)")
+                            }
+                        }
+                    }
+                } else {
+                    print("Couldn't load image.")
                 }
-
-                let eventDate = dates.first!
-                let eventDescription = line.trimmingCharacters(in: .whitespacesAndNewlines)
-
-                results.append((eventDate, eventDescription))
+            } else {
+                print("Unsupported file type.")
             }
-            return results
     }
 
     func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
