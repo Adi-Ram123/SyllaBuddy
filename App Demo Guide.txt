@@ -1,0 +1,69 @@
+Create Account/Log in:
+
+Create an account
+
+Sign out
+
+Login with that account
+
+
+
+
+Calendar:
+
+Give full access to everything when asked
+
+Create an event manually
+
+Create an event using upload PDF (make sure secret plist is in file and you have local pdf that we tested)
+
+On PDF screen delete an event and modify an event (make sure date is in mm-dd-yyyy I didn't add a check for this)
+
+Click hamburger to collapse view (shows all events)
+
+Click hamburger to expand view (shows only events for that date)
+
+Create an event manually for next day and then click that day on calendar
+
+Delete an event
+
+Create another event and immediately go to home to show notification
+
+
+
+
+
+Community Page:
+
+Go to community page (There will be some threads that show up already)
+
+Click CS371 thread
+
+On a second device log in to the app and make a post on the CS371 thread
+
+Also make a post on first device
+
+Go back and show filter option (Select another class not CS371 to show empty thread list)
+
+Click plus button to make a new thread
+
+Do the same thing on second device
+
+
+
+
+
+
+Settings (I have not completely tested this):
+
+Go to settings
+
+Click account settings. Tap to reveal things and change display and institution (I don't know if this will update in firestore)
+
+Go to notification setting and turn both things off (hit cancel both times and then go to settings and change)
+
+Relaunch app and head to settings you will need to re-log in
+
+Go to app settings play with fields
+
+Log out
