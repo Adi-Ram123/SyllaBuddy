@@ -4,6 +4,7 @@
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -15,8 +16,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="hK5-t4-dBt">
-                                <rect key="frame" x="0.0" y="168" width="440" height="150"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="33" translatesAutoresizingMaskIntoConstraints="NO" id="hK5-t4-dBt">
+                                <rect key="frame" x="0.0" y="168" width="440" height="216"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gm3-KL-6pL">
                                         <rect key="frame" x="0.0" y="0.0" width="440" height="50"/>
@@ -32,7 +33,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lwM-pu-vvt">
-                                        <rect key="frame" x="0.0" y="50" width="440" height="50"/>
+                                        <rect key="frame" x="0.0" y="83" width="440" height="50"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="50" id="BgI-xk-1TL"/>
                                         </constraints>
@@ -45,7 +46,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aA9-Z8-h5S">
-                                        <rect key="frame" x="0.0" y="100" width="440" height="50"/>
+                                        <rect key="frame" x="0.0" y="166" width="440" height="50"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="50" id="15S-31-jTk"/>
                                         </constraints>
@@ -59,20 +60,87 @@
                                     </button>
                                 </subviews>
                             </stackView>
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6Ad-gt-khB">
+                                <rect key="frame" x="0.0" y="788" width="440" height="100"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <items>
+                                    <barButtonItem style="plain" id="k6t-Zr-bGn">
+                                        <view key="customView" contentMode="scaleToFill" misplaced="YES" id="kiB-kR-0JQ">
+                                            <rect key="frame" x="20" y="0.0" width="400" height="100"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <subviews>
+                                                <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="2oL-j2-vc9">
+                                                    <rect key="frame" x="0.0" y="0.0" width="400" height="104"/>
+                                                    <subviews>
+                                                        <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NUZ-pw-xFb">
+                                                            <rect key="frame" x="0.0" y="0.0" width="133.33333333333334" height="104"/>
+                                                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                            <state key="normal" image="calendar" backgroundImage="calendar"/>
+                                                            <connections>
+                                                                <segue destination="GbV-cK-Xqz" kind="show" id="rBc-HE-jgM"/>
+                                                            </connections>
+                                                        </button>
+                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2ue-t6-eay">
+                                                            <rect key="frame" x="133.33333333333331" y="0.0" width="133.33333333333331" height="104"/>
+                                                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                            <state key="normal" image="community" backgroundImage="community"/>
+                                                            <connections>
+                                                                <segue destination="xfs-8M-sbY" kind="show" id="eOX-pH-eE9"/>
+                                                            </connections>
+                                                        </button>
+                                                        <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Usl-1Q-NR0">
+                                                            <rect key="frame" x="266.66666666666669" y="0.0" width="133.33333333333331" height="104"/>
+                                                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                            <state key="normal" image="settings selected" backgroundImage="settings selected"/>
+                                                        </button>
+                                                    </subviews>
+                                                </stackView>
+                                            </subviews>
+                                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                            <constraints>
+                                                <constraint firstAttribute="bottomMargin" secondItem="2oL-j2-vc9" secondAttribute="bottom" id="32Z-Sy-hb2"/>
+                                                <constraint firstItem="2oL-j2-vc9" firstAttribute="top" secondItem="kiB-kR-0JQ" secondAttribute="topMargin" id="JyC-t3-o5k"/>
+                                                <constraint firstItem="2oL-j2-vc9" firstAttribute="leading" secondItem="kiB-kR-0JQ" secondAttribute="leadingMargin" id="V04-u9-jpj"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="2oL-j2-vc9" secondAttribute="trailing" id="qdM-aR-FEa"/>
+                                            </constraints>
+                                        </view>
+                                    </barButtonItem>
+                                </items>
+                            </toolbar>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" red="0.99989503619999998" green="0.82648551459999997" blue="0.52571135759999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="hK5-t4-dBt" secondAttribute="trailing" id="VIr-26-rUX"/>
-                            <constraint firstItem="hK5-t4-dBt" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="pzG-dS-8q0"/>
-                            <constraint firstItem="hK5-t4-dBt" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="tSh-zS-oA1"/>
+                            <constraint firstItem="hK5-t4-dBt" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="NqY-0D-Y0x"/>
+                            <constraint firstItem="hK5-t4-dBt" firstAttribute="trailing" secondItem="vDu-zF-Fre" secondAttribute="trailing" id="QcL-l2-th3"/>
+                            <constraint firstItem="hK5-t4-dBt" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="lgm-td-i5B"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="X6L-7Z-MGh"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-863" y="41"/>
+            <point key="canvasLocation" x="-863.18181818181824" y="40.794979079497907"/>
+        </scene>
+        <!--CalenderID-->
+        <scene sceneID="ayr-Ba-j3z">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Calendar" referencedIdentifier="CalenderID" id="GbV-cK-Xqz" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="bDg-sm-gVj"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="J7f-3Q-UV3" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1418" y="360"/>
+        </scene>
+        <!--communityId-->
+        <scene sceneID="lEk-f4-XnO">
+            <objects>
+                <viewControllerPlaceholder storyboardName="CommunityPage" referencedIdentifier="communityId" id="xfs-8M-sbY" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="81X-TI-OYm"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ESj-bB-0dk" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-316" y="419"/>
         </scene>
         <!--Notifications Settings View Controller-->
         <scene sceneID="idH-5h-xj2">
@@ -512,4 +580,12 @@
             <point key="canvasLocation" x="-1815" y="41"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="calendar" width="156" height="140"/>
+        <image name="community" width="149" height="140"/>
+        <image name="settings selected" width="149" height="140"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
 </document>
