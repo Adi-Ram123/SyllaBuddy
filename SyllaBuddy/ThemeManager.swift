@@ -13,15 +13,12 @@ import FirebaseFirestore
 // MARK: - AppTheme
 enum AppTheme: String, CaseIterable {
     case `default` = "Default"
-    case dark = "Dark"
     case light = "Light"
     
     var primaryColor: UIColor {
         switch self {
         case .default:
             return UIColor(named: "DefaultBackground") ?? .systemBackground
-        case .dark:
-            return .black
         case .light:
             return .white
         }
@@ -31,17 +28,13 @@ enum AppTheme: String, CaseIterable {
         switch self {
         case .default, .light:
             return .label
-        case .dark:
-            return .white
         }
     }
     
     var navigationBarColor: UIColor {
         switch self {
         case .default:
-            return .systemBackground
-        case .dark:
-            return .black
+            return UIColor(named: "DefaultBackground") ?? .systemBackground
         case .light:
             return .white
         }
@@ -52,7 +45,6 @@ enum AppTheme: String, CaseIterable {
 enum AppFont: String, CaseIterable {
     case system = "System"
     case serif = "Times New Roman"
-    case monospaced = "Courier New"
     
     func font(ofSize size: CGFloat, weight: UIFont.Weight = .regular) -> UIFont {
         switch self {
@@ -60,8 +52,6 @@ enum AppFont: String, CaseIterable {
             return UIFont.systemFont(ofSize: size, weight: weight)
         case .serif:
             return UIFont(name: "Times New Roman", size: size) ?? UIFont.systemFont(ofSize: size, weight: weight)
-        case .monospaced:
-            return UIFont(name: "Courier New", size: size) ?? UIFont.systemFont(ofSize: size, weight: weight)
         }
     }
 }
@@ -84,7 +74,6 @@ class ThemeManager {
             return
         }
         
-        // Fetch user-specific settings from Firestore
         db.collection("User").whereField("Email", isEqualTo: user.email ?? "").getDocuments { snapshot, error in
             if let error = error {
                 print("Error loading settings: \(error.localizedDescription)")
@@ -125,7 +114,6 @@ class ThemeManager {
     
     private func savePreferences() {
         guard let user = Auth.auth().currentUser else { return }
-        
         db.collection("User").whereField("Email", isEqualTo: user.email ?? "")
             .getDocuments { snapshot, error in
                 if let doc = snapshot?.documents.first {
@@ -140,7 +128,7 @@ class ThemeManager {
                 }
             }
     }
-    
+
     // MARK: - Apply All
     func applyAll(to viewController: UIViewController, reloadFromServer: Bool = true) {
         if reloadFromServer {
@@ -150,19 +138,26 @@ class ThemeManager {
                 }
             }
         } else {
+            // Apply theme and font to the main view
             applyTheme(to: viewController)
             applyFont(to: viewController.view)
             refreshButtons(in: viewController.view)
-            applyFontToNavigationBar(for: viewController)
-            applyFontToTabBarItems()
+            applyFontAndThemeToTableCells(in: viewController.view)
+            applyThemetoTables(in: viewController.view)
+            applyThemeToToolbars(in: viewController.view)
+            
+            // Always update navigation bar styles (title font & color)
+            if let navController = viewController.navigationController {
+                applyFontToNavigationBar(for: viewController)
+                navController.navigationBar.layoutIfNeeded()
+            }
         }
     }
-    
+
     // MARK: - Theme
     func applyTheme(to viewController: UIViewController) {
         viewController.view.backgroundColor = currentTheme.primaryColor
         if let nav = viewController.navigationController {
-            nav.navigationBar.barTintColor = currentTheme.navigationBarColor
             nav.navigationBar.tintColor = currentTheme.textColor
             applyFontToNavigationBar(for: viewController)
         }
@@ -181,11 +176,29 @@ class ThemeManager {
         for subview in view.subviews {
             if let label = subview as? UILabel {
                 label.font = currentFont.font(ofSize: label.font.pointSize)
-            } else if let button = subview as? UIButton, let font = button.titleLabel?.font {
-                button.titleLabel?.font = currentFont.font(ofSize: font.pointSize)
-            } else if let textField = subview as? UITextField, let font = textField.font {
-                textField.font = currentFont.font(ofSize: font.pointSize)
+                label.textColor = currentTheme.textColor
+
+            } else if let button = subview as? UIButton {
+                if let font = button.titleLabel?.font {
+                    button.titleLabel?.font = currentFont.font(ofSize: font.pointSize)
+                }
+                button.setTitleColor(currentTheme.textColor, for: .normal)
+                button.setTitleColor(currentTheme.textColor.withAlphaComponent(0.7), for: .highlighted)
+                
+            } else if let textField = subview as? UITextField {
+                if let font = textField.font {
+                    textField.font = currentFont.font(ofSize: font.pointSize)
+                }
+                textField.textColor = currentTheme.textColor
+
+            } else if let textView = subview as? UITextView {
+                if let font = textView.font {
+                    textView.font = currentFont.font(ofSize: font.pointSize)
+                }
+                textView.textColor = currentTheme.textColor
             }
+
+            // Recursively apply to subviews
             applyFont(to: subview)
         }
     }
@@ -200,23 +213,53 @@ class ThemeManager {
     // MARK: - Navigation Bar
     func applyFontToNavigationBar(for viewController: UIViewController) {
         guard let navBar = viewController.navigationController?.navigationBar else { return }
-        navBar.titleTextAttributes = [
-            .foregroundColor: currentTheme.textColor,
-            .font: currentFont.font(ofSize: 18, weight: .semibold)
+        
+        let textColor = currentTheme.textColor
+        let titleFont = currentFont.font(ofSize: 18, weight: .semibold)
+        let largeTitleFont = currentFont.font(ofSize: 32, weight: .bold)
+        
+        // Configure navigation bar appearance
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = currentTheme.navigationBarColor
+        appearance.titleTextAttributes = [
+            .foregroundColor: textColor,
+            .font: titleFont
+        ]
+        appearance.largeTitleTextAttributes = [
+            .foregroundColor: textColor,
+            .font: largeTitleFont
         ]
         
-        let backFont = currentFont.font(ofSize: 16)
-        UIBarButtonItem.appearance().setTitleTextAttributes(
-            [.font: backFont, .foregroundColor: currentTheme.textColor],
-            for: .normal
-        )
+        navBar.standardAppearance = appearance
+        navBar.scrollEdgeAppearance = appearance
+        navBar.compactAppearance = appearance
+        navBar.compactScrollEdgeAppearance = appearance
+        navBar.tintColor = textColor
+        
+        // Force layout update
+        navBar.layoutIfNeeded()
     }
+
     
-    // MARK: - Tab Bar
-    func applyFontToTabBarItems() {
-        let tabFont = currentFont.font(ofSize: 10)
-        UITabBarItem.appearance().setTitleTextAttributes([.font: tabFont, .foregroundColor: currentTheme.textColor], for: .normal)
+    // MARK: - Toolbar
+    private func applyThemeToToolbars(in view: UIView) {
+        for subview in view.subviews {
+            if let toolbar = subview as? UIToolbar {
+                toolbar.barTintColor = currentTheme.navigationBarColor
+                toolbar.tintColor = currentTheme.textColor
+                
+                // Update bar button items with custom views
+                for item in toolbar.items ?? [] {
+                    if let customView = item.customView {
+                        applyFont(to: customView)  // Apply font to custom buttons/labels
+                    }
+                }
+            }
+            applyThemeToToolbars(in: subview) // Recursive for nested views
+        }
     }
+
     
     // MARK: - Helpers
     private func refreshButtons(in view: UIView) {
@@ -236,6 +279,41 @@ class ThemeManager {
                 button.setTitleColor(currentTheme.textColor, for: .normal)
             }
             updateTextColors(in: subview)
+        }
+    }
+    
+    // MARK: - Table Cell Font & Theme Updates
+    func applyFontAndThemeToTableCells(in view: UIView) {
+        for subview in view.subviews {
+            if let tableView = subview as? UITableView {
+                for cell in tableView.visibleCells {
+                    updateTableCellAppearance(cell)
+                }
+            }
+            applyFontAndThemeToTableCells(in: subview)
+        }
+    }
+
+    private func updateTableCellAppearance(_ cell: UITableViewCell) {
+        // Update text label fonts
+        if let textLabel = cell.textLabel, let font = textLabel.font {
+            textLabel.font = currentFont.font(ofSize: font.pointSize)
+            textLabel.textColor = currentTheme.textColor
+        }
+        
+        if let detailTextLabel = cell.detailTextLabel, let font = detailTextLabel.font {
+            detailTextLabel.font = currentFont.font(ofSize: font.pointSize)
+            detailTextLabel.textColor = currentTheme.textColor
+        }
+        cell.backgroundColor = currentTheme.primaryColor
+    }
+    
+    private func applyThemetoTables(in view: UIView) {
+        for subview in view.subviews {
+            if let tableView = subview as? UITableView {
+                tableView.backgroundColor = currentTheme.primaryColor
+            }
+            applyThemetoTables(in: subview)
         }
     }
 }

@@ -60,20 +60,22 @@
                                     </button>
                                 </subviews>
                             </stackView>
-                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6Ad-gt-khB">
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6Ad-gt-khB">
                                 <rect key="frame" x="0.0" y="788" width="440" height="100"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="100" id="Ftb-aA-boT"/>
+                                </constraints>
                                 <items>
                                     <barButtonItem style="plain" id="k6t-Zr-bGn">
-                                        <view key="customView" contentMode="scaleToFill" misplaced="YES" id="kiB-kR-0JQ">
-                                            <rect key="frame" x="20" y="0.0" width="400" height="100"/>
+                                        <view key="customView" clipsSubviews="YES" contentMode="scaleAspectFit" id="kiB-kR-0JQ">
+                                            <rect key="frame" x="20" y="1" width="400" height="98"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <subviews>
-                                                <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="2oL-j2-vc9">
-                                                    <rect key="frame" x="0.0" y="0.0" width="400" height="104"/>
+                                                <stackView opaque="NO" clipsSubviews="YES" contentMode="scaleAspectFit" distribution="fillProportionally" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="2oL-j2-vc9">
+                                                    <rect key="frame" x="0.0" y="0.0" width="400" height="98"/>
                                                     <subviews>
-                                                        <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NUZ-pw-xFb">
-                                                            <rect key="frame" x="0.0" y="0.0" width="133.33333333333334" height="104"/>
+                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NUZ-pw-xFb">
+                                                            <rect key="frame" x="0.0" y="0.0" width="137.33333333333334" height="98"/>
                                                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                             <state key="normal" image="calendar" backgroundImage="calendar"/>
                                                             <connections>
@@ -81,15 +83,15 @@
                                                             </connections>
                                                         </button>
                                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2ue-t6-eay">
-                                                            <rect key="frame" x="133.33333333333331" y="0.0" width="133.33333333333331" height="104"/>
+                                                            <rect key="frame" x="137.33333333333331" y="0.0" width="131.33333333333331" height="98"/>
                                                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                             <state key="normal" image="community" backgroundImage="community"/>
                                                             <connections>
                                                                 <segue destination="xfs-8M-sbY" kind="show" id="eOX-pH-eE9"/>
                                                             </connections>
                                                         </button>
-                                                        <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Usl-1Q-NR0">
-                                                            <rect key="frame" x="266.66666666666669" y="0.0" width="133.33333333333331" height="104"/>
+                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Usl-1Q-NR0">
+                                                            <rect key="frame" x="268.66666666666669" y="0.0" width="131.33333333333331" height="98"/>
                                                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                             <state key="normal" image="settings selected" backgroundImage="settings selected"/>
                                                         </button>
@@ -98,10 +100,10 @@
                                             </subviews>
                                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                             <constraints>
-                                                <constraint firstAttribute="bottomMargin" secondItem="2oL-j2-vc9" secondAttribute="bottom" id="32Z-Sy-hb2"/>
-                                                <constraint firstItem="2oL-j2-vc9" firstAttribute="top" secondItem="kiB-kR-0JQ" secondAttribute="topMargin" id="JyC-t3-o5k"/>
-                                                <constraint firstItem="2oL-j2-vc9" firstAttribute="leading" secondItem="kiB-kR-0JQ" secondAttribute="leadingMargin" id="V04-u9-jpj"/>
-                                                <constraint firstAttribute="trailingMargin" secondItem="2oL-j2-vc9" secondAttribute="trailing" id="qdM-aR-FEa"/>
+                                                <constraint firstAttribute="bottom" secondItem="2oL-j2-vc9" secondAttribute="bottom" id="38G-T1-ESV"/>
+                                                <constraint firstAttribute="trailing" secondItem="2oL-j2-vc9" secondAttribute="trailing" id="Iny-bX-yCK"/>
+                                                <constraint firstItem="2oL-j2-vc9" firstAttribute="top" secondItem="kiB-kR-0JQ" secondAttribute="top" id="T6P-S7-z2p"/>
+                                                <constraint firstItem="2oL-j2-vc9" firstAttribute="leading" secondItem="kiB-kR-0JQ" secondAttribute="leading" id="vzI-0c-1Lf"/>
                                             </constraints>
                                         </view>
                                     </barButtonItem>
@@ -111,8 +113,11 @@
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" red="0.99989503619999998" green="0.82648551459999997" blue="0.52571135759999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="6Ad-gt-khB" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="FzJ-Oj-RCU"/>
                             <constraint firstItem="hK5-t4-dBt" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="NqY-0D-Y0x"/>
                             <constraint firstItem="hK5-t4-dBt" firstAttribute="trailing" secondItem="vDu-zF-Fre" secondAttribute="trailing" id="QcL-l2-th3"/>
+                            <constraint firstItem="6Ad-gt-khB" firstAttribute="trailing" secondItem="vDu-zF-Fre" secondAttribute="trailing" id="deM-wR-eqR"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" secondItem="6Ad-gt-khB" secondAttribute="bottom" id="jPw-ha-PsR"/>
                             <constraint firstItem="hK5-t4-dBt" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="lgm-td-i5B"/>
                         </constraints>
                     </view>

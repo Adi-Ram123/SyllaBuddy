@@ -14,8 +14,8 @@ class AppSettingsViewController: UIViewController, UIPickerViewDelegate, UIPicke
     @IBOutlet weak var fontTextField: UITextField!
     @IBOutlet weak var logoutButton: UIButton!
     
-    @IBOutlet weak var themeSaveButton: UIButton!      // Save Theme Button
-    @IBOutlet weak var fontSaveButton: UIButton!       // Save Font Button
+    @IBOutlet weak var themeSaveButton: UIButton!
+    @IBOutlet weak var fontSaveButton: UIButton!
     
     private let themes = AppTheme.allCases.map { $0.rawValue }
     private let fonts = AppFont.allCases.map { $0.rawValue }
@@ -33,7 +33,6 @@ class AppSettingsViewController: UIViewController, UIPickerViewDelegate, UIPicke
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "App Settings"
-        
         setupPickers()
         loadSavedPreferences()
     }
@@ -85,13 +84,11 @@ class AppSettingsViewController: UIViewController, UIPickerViewDelegate, UIPicke
         }
     }
     
+    // MARK: - Save Actions
     @IBAction func saveThemeTapped(_ sender: Any) {
         if let theme = AppTheme(rawValue: selectedTheme) {
             ThemeManager.shared.updateTheme(theme)
-            ThemeManager.shared.applyTheme(to: self)  // Apply theme colors
-            ThemeManager.shared.applyFont(to: self.view) // Reapply font
-            ThemeManager.shared.applyFontToNavigationBar(for: self)
-            ThemeManager.shared.applyFontToTabBarItems()
+            refreshAllVisibleViewControllers()
         }
         showAlert(title: "Theme Saved", message: "App theme has been updated.")
     }
@@ -99,11 +96,35 @@ class AppSettingsViewController: UIViewController, UIPickerViewDelegate, UIPicke
     @IBAction func saveFontTapped(_ sender: Any) {
         if let font = AppFont(rawValue: selectedFont) {
             ThemeManager.shared.updateFont(font)
-            ThemeManager.shared.applyFont(to: self.view)  // Reapply font
-            ThemeManager.shared.applyFontToNavigationBar(for: self)
-            ThemeManager.shared.applyFontToTabBarItems()
+            refreshAllVisibleViewControllers()
         }
         showAlert(title: "Font Saved", message: "Font style has been updated.")
+    }
+    
+    // MARK: - Refresh Visible View Controllers
+    private func refreshAllVisibleViewControllers() {
+        if let window = UIApplication.shared.windows.first {
+            if let rootVC = window.rootViewController {
+                applyThemeRecursively(to: rootVC)
+            }
+        }
+    }
+    
+    private func applyThemeRecursively(to viewController: UIViewController) {
+        ThemeManager.shared.applyAll(to: viewController, reloadFromServer: false)
+        for child in viewController.children {
+            applyThemeRecursively(to: child)
+        }
+        if let nav = viewController as? UINavigationController {
+            for vc in nav.viewControllers {
+                applyThemeRecursively(to: vc)
+            }
+        }
+        if let tab = viewController as? UITabBarController {
+            for vc in tab.viewControllers ?? [] {
+                applyThemeRecursively(to: vc)
+            }
+        }
     }
     
     // MARK: - Load Preferences
