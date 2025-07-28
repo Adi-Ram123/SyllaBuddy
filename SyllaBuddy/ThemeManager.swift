@@ -135,8 +135,6 @@ class ThemeManager {
                     ]) { error in
                         if let error = error {
                             print("Error saving settings: \(error.localizedDescription)")
-                        } else {
-                            print("User settings saved to Firestore.")
                         }
                     }
                 }
