@@ -16,6 +16,7 @@ class EventViewController: UIViewController, UITableViewDelegate, UITableViewDat
     var delegate: CalendarEventView!
     var eventList: [Event]!
     let db = Firestore.firestore()
+    var className: String!
     
     let cellId = "eventCell"
     
@@ -28,7 +29,8 @@ class EventViewController: UIViewController, UITableViewDelegate, UITableViewDat
         super.viewDidLoad()
         tableView.delegate = self
         tableView.dataSource = self
-        eventFound.text = "\(eventList.count) events found in \(eventList[0].eventClass)"
+        className = eventList[0].eventClass
+        eventFound.text = "\(eventList.count) events found in \(className)"
 
         // Do any additional setup after loading the view.
     }
@@ -40,7 +42,7 @@ class EventViewController: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        eventList.count
+        return eventList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -83,7 +85,7 @@ class EventViewController: UIViewController, UITableViewDelegate, UITableViewDat
         if editingStyle == .delete {
             eventList.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
-            eventFound.text = "\(eventList.count) events found in \(eventList[0].eventClass)"
+            eventFound.text = "\(eventList.count) events found in \(className)"
         }
     }
     
