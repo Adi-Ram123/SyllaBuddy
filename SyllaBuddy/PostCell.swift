@@ -22,6 +22,7 @@ class PostCell: UITableViewCell {
         setupViews()
     }
 
+    //Programatically arranging view
     private func setupViews() {
         usernameLabel.font = UIFont.boldSystemFont(ofSize: 16)
         messageLabel.font = UIFont.systemFont(ofSize: 14)

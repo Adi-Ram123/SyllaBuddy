@@ -110,15 +110,8 @@ class PostViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func getAuthUser() {
-        if let user = Auth.auth().currentUser {
-            // User is signed in
-            print("User is signed in with email: \(user.email ?? "No Email")")
-        } else {
-            // No user is signed in
-            print("No user is currently signed in.")
-        }
+        let user = Auth.auth().currentUser
         let userEmail = Auth.auth().currentUser!.email
-        print(userEmail!)
         
         let collection = db.collection("User")
         
@@ -163,14 +156,13 @@ class PostViewController: UIViewController, UITableViewDelegate, UITableViewData
                 let threadDoc = documents[0]
                 let docRef = collection.document(threadDoc.documentID)
 
-                // Create Post object using your global `user` and message text
                 let myPost = Post(username: self.user, message: self.messageInput.text)
                 
 
-                // Update the document by appending the new post to the Posts array
                 docRef.updateData([
                     "Posts": FieldValue.arrayUnion([myPost.toDictionary()])
-                ]) { error in
+                ]) {
+                    error in
                     if let error = error {
                         print("Failed to update thread with new post: \(error.localizedDescription)")
                     } else {
@@ -224,7 +216,6 @@ class PostViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
     }
 
-
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         print(postList.count)
@@ -239,16 +230,5 @@ class PostViewController: UIViewController, UITableViewDelegate, UITableViewData
         cell.selectionStyle = .none
         return cell
     }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }

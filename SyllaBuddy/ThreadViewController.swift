@@ -53,15 +53,8 @@ class ThreadViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func getUserClasses() {
         userClasses = [String]()
-        if let user = Auth.auth().currentUser {
-            // User is signed in
-            print("User is signed in with email: \(user.email ?? "No Email")")
-        } else {
-            // No user is signed in
-            print("No user is currently signed in.")
-        }
+        let user = Auth.auth().currentUser
         let userEmail = Auth.auth().currentUser!.email
-        print(userEmail!)
         
         let collection = db.collection("User")
         
@@ -69,13 +62,13 @@ class ThreadViewController: UIViewController, UITableViewDelegate, UITableViewDa
         {
             (querySnapshot, error) in
             if let error = error {
-                print("Error querying user: \(error.localizedDescription)")
+                //print("Error querying user: \(error.localizedDescription)")
             } else if let documents = querySnapshot?.documents, !documents.isEmpty {
                 let userDoc = documents[0]
                 let data = userDoc.data()
                 
                 self.userClasses = data["Classes"] as? [String]
-                print("User Classes: \(self.userClasses!)")
+                //print("User Classes: \(self.userClasses!)")
             }
         }
         
@@ -87,12 +80,12 @@ class ThreadViewController: UIViewController, UITableViewDelegate, UITableViewDa
             
         threadListener = db.collection("Thread").addSnapshotListener { snapshot, error in
             if let error = error {
-                print("Error listening to threads: \(error)")
+                //print("Error listening to threads: \(error)")
                 return
             }
                 
             guard let documents = snapshot?.documents else {
-                print("No threads found")
+                //print("No threads found")
                 return
             }
                 
@@ -109,7 +102,7 @@ class ThreadViewController: UIViewController, UITableViewDelegate, UITableViewDa
                             let username = postDict["username"] as? String,
                             let message = postDict["message"] as? String
                         else {
-                            print("Invalid post format: \(postDict)")
+                            //print("Invalid post format: \(postDict)")
                             return nil
                         }
                         return Post(username: username, message: message)
@@ -121,7 +114,7 @@ class ThreadViewController: UIViewController, UITableViewDelegate, UITableViewDa
                     let university = data["University"] as? String {
                     let thread = Thread(className: className, posts: posts, title: title, university: university)
                         
-                    // Optional filtering by userClasses
+                    // filtering by userClasses
                     if self.filteredClass == "all" || self.filteredClass == className {
                         self.threadList.append(thread)
                     }
@@ -141,7 +134,7 @@ class ThreadViewController: UIViewController, UITableViewDelegate, UITableViewDa
             alert.addAction(UIAlertAction(title: className, style: .default) {
                 _ in
                 self.filteredClass = "\(className)"
-                print(self.filteredClass!)
+                //print(self.filteredClass!)
                 self.setupThreadListener()
             })
         }
@@ -149,7 +142,7 @@ class ThreadViewController: UIViewController, UITableViewDelegate, UITableViewDa
         alert.addAction(UIAlertAction(title: "show all", style: .default) {
             _ in
             self.filteredClass = "all"
-            print(self.filteredClass!)
+            //print(self.filteredClass!)
             self.setupThreadListener()
         })
 
@@ -162,7 +155,7 @@ class ThreadViewController: UIViewController, UITableViewDelegate, UITableViewDa
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == threadId, let nextVC = segue.destination as? PostViewController, let indexPath = tableView.indexPathForSelectedRow {
             nextVC.threadInfo = threadList[indexPath.row]
-            print(threadList[indexPath.row].posts.count)
+            //print(threadList[indexPath.row].posts.count)
             tableView.deselectRow(at: indexPath, animated: true)
         }
         

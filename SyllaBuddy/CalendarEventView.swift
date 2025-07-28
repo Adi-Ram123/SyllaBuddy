@@ -718,7 +718,7 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
     
     func reloadData() {
         reloadFirestoreData()
-        NotificationScheduler.notifyIfEventTodayExistsIfAuthorized()
+        NotificationScheduler.checkPermissions()
         if let selection = calendarView.selectionBehavior as? UICalendarSelectionSingleDate,
                let selectedDateComponents = selection.selectedDate,
                let selectedDate = Calendar.current.date(from: selectedDateComponents), !toggleOn {

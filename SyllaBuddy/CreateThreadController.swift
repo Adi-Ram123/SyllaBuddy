@@ -14,7 +14,7 @@ class CreateThreadController: UIViewController, UIPickerViewDelegate, UIPickerVi
     let stackView = UIStackView()
     let titleLabel = UILabel()
     let messageInput = UITextView()
-    let sendButton = UIButton(type: .system)
+    let postButton = UIButton(type: .system)
     var userClasses: [String]!
     let classPickerField = UITextField()
     let classPickerView = UIPickerView()
@@ -52,7 +52,7 @@ class CreateThreadController: UIViewController, UIPickerViewDelegate, UIPickerVi
     }
     
     func setupSubviews() {
-        // Static Title Label
+        //Title
         titleLabel.text = "Title"
         titleLabel.font = UIFont.boldSystemFont(ofSize: 20)
         titleLabel.textAlignment = .left
@@ -62,10 +62,9 @@ class CreateThreadController: UIViewController, UIPickerViewDelegate, UIPickerVi
         titleContainer.alignment = .fill
         titleContainer.distribution = .fill
         titleContainer.translatesAutoresizingMaskIntoConstraints = false
-
         titleContainer.addArrangedSubview(titleLabel)
 
-        
+        //Title text field
         titleInput.placeholder = "Enter thread title"
         titleInput.borderStyle = .roundedRect
         titleInput.font = UIFont.systemFont(ofSize: 16)
@@ -76,12 +75,10 @@ class CreateThreadController: UIViewController, UIPickerViewDelegate, UIPickerVi
         titleInput.layer.borderWidth = 1
         titleInput.layer.cornerRadius = 8
         titleInput.layer.masksToBounds = true
-        
         titleContainer.addArrangedSubview(titleInput)
         
-        // Increase height of titleInput (e.g., 50 points)
+        // Messing with height of title
         titleInput.heightAnchor.constraint(equalToConstant: 50).isActive = true
-
         stackView.addArrangedSubview(titleContainer)
 
         // Picker Field
@@ -97,20 +94,20 @@ class CreateThreadController: UIViewController, UIPickerViewDelegate, UIPickerVi
         classPickerField.layer.masksToBounds = true
 
         // Add down arrow icon on right
-        let arrowImage = UIImage(systemName: "chevron.down")
-        let arrowImageView = UIImageView(image: arrowImage)
-        arrowImageView.tintColor = .gray
-        arrowImageView.contentMode = .scaleAspectFit
-        arrowImageView.frame = CGRect(x: 0, y: 0, width: 10, height: 10)
-        classPickerField.rightView = arrowImageView
+        let arrow = UIImage(systemName: "chevron.down")
+        let arrowImage = UIImageView(image: arrow)
+        arrowImage.tintColor = .gray
+        arrowImage.contentMode = .scaleAspectFit
+        arrowImage.frame = CGRect(x: 0, y: 0, width: 10, height: 10)
+        classPickerField.rightView = arrowImage
         classPickerField.rightViewMode = .always
-
         stackView.addArrangedSubview(classPickerField)
 
+        //Tap gesture to allow picker to populate
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(showClassMenu))
         classPickerField.addGestureRecognizer(tapGesture)
         classPickerField.tintColor = .clear
-        classPickerField.inputView = UIView() // disables keyboard
+        classPickerField.inputView = UIView()
 
         // Setup pickerView
         classPickerView.delegate = self
@@ -126,60 +123,48 @@ class CreateThreadController: UIViewController, UIPickerViewDelegate, UIPickerVi
         messageInput.translatesAutoresizingMaskIntoConstraints = false
         stackView.addArrangedSubview(messageInput)
         
-        // Decrease height of messageInput (25% of view height)
+        // Messing with height of message
         messageInput.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.25).isActive = true
 
-        // Button Container
+        // Post Button
         let buttonContainer = UIView()
         buttonContainer.translatesAutoresizingMaskIntoConstraints = false
         buttonContainer.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        postButton.setTitle("Post", for: .normal)
+        postButton.backgroundColor = .systemBlue
+        postButton.setTitleColor(.white, for: .normal)
+        postButton.layer.cornerRadius = 8
+        postButton.translatesAutoresizingMaskIntoConstraints = false
+        postButton.addTarget(self, action: #selector(postPressed), for: .touchUpInside)
 
-        sendButton.setTitle("Post", for: .normal)
-        sendButton.backgroundColor = .systemBlue
-        sendButton.setTitleColor(.white, for: .normal)
-        sendButton.layer.cornerRadius = 8
-        sendButton.translatesAutoresizingMaskIntoConstraints = false
-        sendButton.addTarget(self, action: #selector(postPressed), for: .touchUpInside)
-
-        buttonContainer.addSubview(sendButton)
+        buttonContainer.addSubview(postButton)
 
         NSLayoutConstraint.activate([
-            sendButton.trailingAnchor.constraint(equalTo: buttonContainer.trailingAnchor, constant: -10),
-            sendButton.widthAnchor.constraint(equalTo: buttonContainer.widthAnchor, multiplier: 0.25),
-            sendButton.heightAnchor.constraint(equalTo: buttonContainer.heightAnchor),
-            sendButton.centerYAnchor.constraint(equalTo: buttonContainer.centerYAnchor)
+            postButton.trailingAnchor.constraint(equalTo: buttonContainer.trailingAnchor, constant: -10),
+            postButton.widthAnchor.constraint(equalTo: buttonContainer.widthAnchor, multiplier: 0.25),
+            postButton.heightAnchor.constraint(equalTo: buttonContainer.heightAnchor),
+            postButton.centerYAnchor.constraint(equalTo: buttonContainer.centerYAnchor)
         ])
-
         stackView.addArrangedSubview(buttonContainer)
     }
 
-    
+    // Populate picker with classes
     @objc func showClassMenu() {
         let alert = UIAlertController(title: "Choose Class", message: nil, preferredStyle: .actionSheet)
-        
         for className in userClasses {
             alert.addAction(UIAlertAction(title: className, style: .default, handler: { _ in
                 self.classPickerField.text = className
             }))
         }
-
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        
-
         present(alert, animated: true, completion: nil)
     }
     
+    //Update firebase with new thread
     @objc func postPressed() {
         
-        if let user = Auth.auth().currentUser {
-            // User is signed in
-            print("User is signed in with email: \(user.email ?? "No Email")")
-        } else {
-            // No user is signed in
-            print("No user is currently signed in.")
-        }
+        let user = Auth.auth().currentUser
         let userEmail = Auth.auth().currentUser!.email
-        print(userEmail!)
         
         let collection = db.collection("User")
         
@@ -196,7 +181,6 @@ class CreateThreadController: UIViewController, UIPickerViewDelegate, UIPickerVi
                 let user = data["Username"] as! String
                 let myPost = Post(username: user, message: self.messageInput.text!)
                 
-                
                 let threadData: [String: Any] = [
                     "Class": self.classPickerField.text!,
                     "Title": self.titleInput.text!,
@@ -206,10 +190,10 @@ class CreateThreadController: UIViewController, UIPickerViewDelegate, UIPickerVi
                     
                 self.db.collection("Thread").addDocument(data: threadData) { error in
                         if let error = error {
-                            print("Error adding thread: \(error.localizedDescription)")
+                            //print("Error adding thread: \(error.localizedDescription)")
                         } else {
-                            print("Thread added successfully!")
-                            self.navigationController?.popViewController(animated: true)
+                            //print("Thread added successfully!")
+                            self.navigationController?.popViewController(animated: true) // Dismiss view after succesful post
                         }
                     }
                 
@@ -231,17 +215,4 @@ class CreateThreadController: UIViewController, UIPickerViewDelegate, UIPickerVi
         return userClasses[row]
     }
     
-    
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

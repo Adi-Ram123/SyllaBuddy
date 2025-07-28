@@ -11,31 +11,33 @@ import FirebaseFirestore
 import FirebaseAuth
 import UserNotifications
 
+// Janky solution but helper class storing all notifications shown in userDefaults to avoid duplicate notifications and displays notifications
 class NotificationScheduler {
     
     static let eventStore = EKEventStore()
     static let db = Firestore.firestore()
-    static let notifiedEventsKey = "NotifiedEvents"  // UserDefaults key to track notified events
+    static let notifiedEventsKey = "NotifiedEvents"
     
-    // Call this to check permissions and notify immediately if event today
-    static func notifyIfEventTodayExistsIfAuthorized() {
+    // Check permissions
+    static func checkPermissions() {
         let calendarStatus = EKEventStore.authorizationStatus(for: .event)
         guard calendarStatus == .fullAccess || calendarStatus == .writeOnly else {
-            print("No calendar access")
+            //print("No calendar access")
             return
         }
 
         UNUserNotificationCenter.current().getNotificationSettings { settings in
             guard settings.authorizationStatus == .authorized else {
-                print("No notification access")
+                //print("No notification access")
                 return
             }
 
-            scheduleImmediateNotificationIfEventToday()
+            checkToday()
         }
     }
     
-    static func scheduleImmediateNotificationIfEventToday() {
+    // Checks if there were events at the current day
+    static func checkToday() {
         let calendar = Calendar.current
         let startOfDay = calendar.startOfDay(for: Date())
         guard let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) else { return }
@@ -43,83 +45,81 @@ class NotificationScheduler {
         let predicate = eventStore.predicateForEvents(withStart: startOfDay, end: endOfDay, calendars: nil)
         let events = eventStore.events(matching: predicate)
 
-        checkUserEventsAndNotify(for: events)
+        fetchFirebaseEvents(for: events)
     }
     
-    static func checkUserEventsAndNotify(for calendarEvents: [EKEvent]) {
-        guard let user = Auth.auth().currentUser, let email = user.email else {
-            print("No user signed in or email unavailable")
-            return
-        }
+    // Looking in firebase to see if the event exists and schedules notification if it does
+    static func fetchFirebaseEvents(for calendarEvents: [EKEvent]) {
+        let user = Auth.auth().currentUser
+        let email = user!.email
 
         let userCollection = db.collection("User")
 
-        userCollection
-            .whereField("Email", isEqualTo: email)
-            .getDocuments { snapshot, error in
-                if let error = error {
-                    print("Error fetching user document: \(error)")
-                    return
+        userCollection.whereField("Email", isEqualTo: email!).getDocuments {
+            snapshot, error in
+            if let error = error {
+                //print("Error fetching user document: \(error)")
+                return
+            }
+
+            guard let documents = snapshot?.documents, let userDoc = documents.first else {
+                //print("No user document found")
+                return
+            }
+
+            guard let eventsArray = userDoc.data()["Events"] as? [[String: Any]] else {
+                //print("No Events array found in user document")
+                return
+            }
+
+            let formatter = DateFormatter()
+            formatter.dateFormat = "MM-dd-yyyy"
+            let todayString = formatter.string(from: Date())
+
+            let todaysEvents = eventsArray.filter {
+                eventDict in
+                if let dateStr = eventDict["date"] as? String {
+                    return dateStr == todayString
                 }
+                return false
+            }
 
-                guard let documents = snapshot?.documents, let userDoc = documents.first else {
-                    print("No user document found")
-                    return
-                }
+            let firestoreTitle = todaysEvents.compactMap { $0["event"] as? String }.map {
+                $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            }
 
-                guard let eventsArray = userDoc.data()["Events"] as? [[String: Any]] else {
-                    print("No Events array found in user document")
-                    return
-                }
-
-                let formatter = DateFormatter()
-                formatter.dateFormat = "MM-dd-yyyy"
-                let todayString = formatter.string(from: Date())
-
-                let todaysEvents = eventsArray.filter { eventDict in
-                    if let dateStr = eventDict["date"] as? String {
-                        return dateStr == todayString
-                    }
-                    return false
-                }
-
-                let firestoreEventTitles = todaysEvents.compactMap { $0["event"] as? String }.map {
-                    $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-                }
-
-                for calendarEvent in calendarEvents {
-                    if let title = calendarEvent.title?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased(),
-                       firestoreEventTitles.contains(title) {
-                        
-                        let eventIdentifier = createIdentifier(for: calendarEvent)
-                        checkAndScheduleNotification(for: calendarEvent, identifier: eventIdentifier)
-                    }
+            for calendarEvent in calendarEvents {
+                if let title = calendarEvent.title?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased(),
+                    firestoreTitle.contains(title) {
+                    let eventIdentifier = createIdentifier(for: calendarEvent)
+                    createNotification(for: calendarEvent, identifier: eventIdentifier)
                 }
             }
+        }
     }
     
-    static func checkAndScheduleNotification(for event: EKEvent, identifier: String) {
+    // Creates the notification and updates user default to not show duplicate
+    static func createNotification(for event: EKEvent, identifier: String) {
         UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
             let alreadyScheduled = requests.contains { request in
                 request.identifier == identifier
             }
 
             if alreadyScheduled {
-                print("Notification for '\(event.title ?? "")' already scheduled, skipping.")
                 return
             }
 
             if hasNotified(for: identifier) {
-                print("Notification for '\(event.title ?? "")' already notified, skipping.")
                 return
             }
 
-            scheduleImmediateNotification(for: event, identifier: identifier)
+            scheduleNotification(for: event, identifier: identifier)
             markAsNotified(eventId: identifier)
         }
     }
 
-    static func scheduleImmediateNotification(for event: EKEvent, identifier: String) {
+    // Schedules the notification on phone
+    static func scheduleNotification(for event: EKEvent, identifier: String) {
         let content = UNMutableNotificationContent()
         content.title = "Event Today"
         content.body = "\(event.title ?? "Untitled") is scheduled for today."
@@ -135,36 +135,41 @@ class NotificationScheduler {
 
         UNUserNotificationCenter.current().add(request) { error in
             if let error = error {
-                print("Failed to show notification: \(error.localizedDescription)")
+                //print("Failed to show notification: \(error.localizedDescription)")
             } else {
-                print("Notification scheduled for event: \(event.title ?? "Untitled")")
+                //print("Notification scheduled for event: \(event.title ?? "Untitled")")
             }
         }
     }
     
+    // Helper to create unique id
     static func createIdentifier(for event: EKEvent) -> String {
-        let title = event.title?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() ?? "untitled"
+        let title = event.title?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         let dateStr = formattedDate(from: event.startDate)
         return "\(title)_\(dateStr)"
     }
     
+    // Helper to format date to month day year
     static func formattedDate(from date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "MM-dd-yyyy"
         return formatter.string(from: date)
     }
 
+    // Helper to check if the user has already seen notification
     static func hasNotified(for identifier: String) -> Bool {
         let notified = UserDefaults.standard.array(forKey: notifiedEventsKey) as? [String] ?? []
         return notified.contains(identifier)
     }
 
+    // Helper to update userDefault
     static func markAsNotified(eventId identifier: String) {
         var notified = UserDefaults.standard.array(forKey: notifiedEventsKey) as? [String] ?? []
         notified.append(identifier)
         UserDefaults.standard.set(notified, forKey: notifiedEventsKey)
     }
     
+    // Helper to clear userDefault of events on relaunch
     static func clearNotifiedEvents() {
         UserDefaults.standard.removeObject(forKey: notifiedEventsKey)
     }

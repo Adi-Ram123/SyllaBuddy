@@ -10,7 +10,6 @@ import FirebaseAuth
 
 class LoginView: UIViewController, UITextFieldDelegate {
 
-    
     @IBOutlet weak var email: UITextField!
     @IBOutlet weak var password: UITextField!
     let loginId = "loginSegue"
