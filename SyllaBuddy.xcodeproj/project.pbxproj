@@ -116,7 +116,7 @@
 					};
 				};
 			};
-			buildConfigurationList = D05DE62D2E1ED746009D12A4 /* Build configuration list for PBXProject "SyllaBuddy" */;
+			buildConfigurationList = D05DE62D2E1ED746009D12A4 /* Build configuration list for PBXProject "Syllabuddy" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -337,7 +337,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D05DE62D2E1ED746009D12A4 /* Build configuration list for PBXProject "SyllaBuddy" */ = {
+		D05DE62D2E1ED746009D12A4 /* Build configuration list for PBXProject "Syllabuddy" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D05DE6482E1ED749009D12A4 /* Debug */,
