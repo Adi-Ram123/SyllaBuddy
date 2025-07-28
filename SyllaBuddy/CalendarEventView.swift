@@ -383,21 +383,21 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
     // Select the PDF and call API to generate the events
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         
-        //PDF selection
         pdfList = [Event]()
         guard let selectedURL = urls.first else { return }
+
         guard selectedURL.startAccessingSecurityScopedResource() else {
             makePopup(popupTitle: "PDF Error", popupMessage: "Error in reading PDF")
             return
         }
         defer { selectedURL.stopAccessingSecurityScopedResource() }
+
         let fileExtension = selectedURL.pathExtension.lowercased()
-        
+
         if fileExtension == "pdf" {
             let extractedText = extractTextFromPDF(url: selectedURL)
             self.callChatGPT(with: extractedText) { result in
                 switch result {
-                    // API succeded in finding events perform segue
                     case .success(let gptResponse):
                         if gptResponse.events.isEmpty {
                             DispatchQueue.main.async {
@@ -405,22 +405,52 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
                             }
                             return
                         }
+                        
                         let course = gptResponse.course
                         for event in gptResponse.events {
                             let newEvent = Event(date: event.date, event: event.event, eventClass: course)
                             self.pdfList.append(newEvent)
                         }
+                        
                         DispatchQueue.main.async {
                             self.performSegue(withIdentifier: self.confirmSegue, sender: self)
                         }
-                    
-                    //API failed create error message
+
                     case .failure(let error):
                         DispatchQueue.main.async {
-                            self.makePopup(popupTitle: "PDF Error", popupMessage: "Error in finding events")
+                            self.makePopup(popupTitle: "PDF Error", popupMessage: "Error in finding")
                         }
                         //print("Error calling GPT: \(error)")
                 }
+            }
+
+        } else if ["png", "jpg", "jpeg"].contains(fileExtension) {
+            if let image = UIImage(contentsOfFile: selectedURL.path) {
+                extractTextFromImage(image) { extractedText in
+                    self.callChatGPT(with: extractedText) { result in
+                        switch result {
+                            case .success(let gptResponse):
+                                if gptResponse.events.isEmpty {
+                                    return
+                                }
+                                
+                                let course = gptResponse.course
+                                for event in gptResponse.events {
+                                    let newEvent = Event(date: event.date, event: event.event, eventClass: course)
+                                    self.pdfList.append(newEvent)
+                                }
+
+                                DispatchQueue.main.async {
+                                    self.performSegue(withIdentifier: self.confirmSegue, sender: self)
+                                }
+
+                            case .failure(let error):
+                                print("Failed \(error.localizedDescription)")
+                            }
+                    }
+                }
+            } else {
+                print("Couldn't load image.")
             }
         } else {
             print("Unsupported file type.")
@@ -491,7 +521,7 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
                    let content = decoded.choices.first?.message.content ?? ""
                    
                    let cleanedContent = self.cleanJSON(from: content)
-                   //print("Cleaned content:\n\(cleanedContent)")
+                   print("Cleaned content:\n\(cleanedContent)")
                    
                    if let jsonData = cleanedContent.data(using: .utf8) {
                        let parsed = try JSONDecoder().decode(GPTResponse.self, from: jsonData)
@@ -530,6 +560,28 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
             result += doc.page(at: i)?.string ?? ""
         }
         return result
+    }
+    
+    // Helper to get text from image
+    func extractTextFromImage(_ image: UIImage, completion: @escaping (String) -> Void) {
+        guard let cgImage = image.cgImage else {
+            completion("")
+            return
+        }
+        
+        let request = VNRecognizeTextRequest { request, error in
+            var result = ""
+            for observation in request.results as? [VNRecognizedTextObservation] ?? [] {
+                if let text = observation.topCandidates(1).first {
+                    result += text.string + "\n"
+                }
+            }
+            completion(result)
+        }
+        
+        request.recognitionLevel = .accurate
+        let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+        try? handler.perform([request])
     }
 
     func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
