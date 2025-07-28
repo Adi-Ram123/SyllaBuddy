@@ -81,7 +81,9 @@ class CreateAccountView: UIViewController, UITextFieldDelegate {
                     "Email": mail,
                     "Events": [],
                     "University": college,
-                    "Username": user
+                    "Username": user,
+                    "theme": AppTheme.default.rawValue,
+                    "font": AppFont.system.rawValue
                 ]
                 self.db.collection("User").addDocument(data: userData) {
                     (err) in

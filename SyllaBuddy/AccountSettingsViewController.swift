@@ -12,10 +12,10 @@ import FirebaseFirestore
 class AccountSettingsViewController: UIViewController {
 
     @IBOutlet weak var emailLabel: UILabel!
-    @IBOutlet weak var passwordLabel: UILabel!
     
-    @IBOutlet weak var revealEmailButton: UIButton!
-    @IBOutlet weak var revealPasswordButton: UIButton!
+    @IBOutlet weak var newPasswordTextField: UITextField!
+    @IBOutlet weak var confirmPasswordTextField: UITextField!
+    @IBOutlet weak var changePasswordSaveButton: UIButton!
     
     @IBOutlet weak var displayNameTextField: UITextField!
     @IBOutlet weak var displayNameSaveButton: UIButton!
@@ -23,9 +23,8 @@ class AccountSettingsViewController: UIViewController {
     @IBOutlet weak var institutionTextField: UITextField!
     @IBOutlet weak var institutionSaveButton: UIButton!
     
-    private var emailHidden: Bool = true
-    private var passwordHidden: Bool = true
     private let db = Firestore.firestore()
+    private var userDocumentID: String?
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -40,32 +39,49 @@ class AccountSettingsViewController: UIViewController {
     }
     
     private func setupInitialUI() {
-        emailLabel.text = "Email"
-        passwordLabel.text = "Password"
-        revealEmailButton.setTitle("Tap to Reveal", for: .normal)
-        revealPasswordButton.setTitle("Tap to Reveal", for: .normal)
+        if let email = Auth.auth().currentUser?.email {
+            emailLabel.text = "Email: \(email)"
+        } else {
+            emailLabel.text = "Email: (unknown)"
+        }
+        newPasswordTextField.isSecureTextEntry = true
+        confirmPasswordTextField.isSecureTextEntry = true
     }
     
-    @IBAction func revealEmailTapped(_ sender: UIButton) {
-        emailHidden.toggle()
-        if let email = Auth.auth().currentUser?.email {
-            revealEmailButton.setTitle(emailHidden ? "Tap to Reveal" : email, for: .normal)
+    // MARK: - Change Password
+    @IBAction func changePasswordTapped(_ sender: Any) {
+        guard let newPassword = newPasswordTextField.text, !newPassword.isEmpty,
+              let confirmPassword = confirmPasswordTextField.text, !confirmPassword.isEmpty else {
+            showAlert(title: "Error", message: "Please fill out both password fields.")
+            return
+        }
+        
+        guard newPassword == confirmPassword else {
+            showAlert(title: "Error", message: "Passwords do not match.")
+            return
+        }
+        
+        guard let user = Auth.auth().currentUser else { return }
+        user.updatePassword(to: newPassword) { error in
+            if let error = error {
+                self.showAlert(title: "Error", message: "Failed to update password: \(error.localizedDescription)")
+            } else {
+                self.newPasswordTextField.text = ""
+                self.confirmPasswordTextField.text = ""
+                self.showAlert(title: "Success", message: "Password updated successfully.")
+            }
         }
     }
     
-    @IBAction func revealPasswordTapped(_ sender: UIButton) {
-        passwordHidden.toggle()
-        revealPasswordButton.setTitle(passwordHidden ? "Tap to Reveal" : "********", for: .normal)
-    }
-    
+    // MARK: - Change Display Name
     @IBAction func saveDisplayNameTapped(_ sender: Any) {
         guard let newName = displayNameTextField.text, !newName.isEmpty else {
             showAlert(title: "Error", message: "Display name cannot be empty.")
             return
         }
-        guard let user = Auth.auth().currentUser else { return }
+        guard let docID = userDocumentID else { return }
         
-        db.collection("users").document(user.uid).setData(["username": newName], merge: true) { error in
+        db.collection("User").document(docID).updateData(["Username": newName]) { error in
             if let error = error {
                 self.showAlert(title: "Error", message: "Failed to update display name: \(error.localizedDescription)")
             } else {
@@ -74,14 +90,15 @@ class AccountSettingsViewController: UIViewController {
         }
     }
     
+    // MARK: - Change Institution
     @IBAction func saveInstitutionTapped(_ sender: Any) {
         guard let institution = institutionTextField.text, !institution.isEmpty else {
             showAlert(title: "Error", message: "Institution cannot be empty.")
             return
         }
-        guard let user = Auth.auth().currentUser else { return }
+        guard let docID = userDocumentID else { return }
         
-        db.collection("users").document(user.uid).setData(["university": institution], merge: true) { error in
+        db.collection("User").document(docID).updateData(["University": institution]) { error in
             if let error = error {
                 self.showAlert(title: "Error", message: "Failed to update institution: \(error.localizedDescription)")
             } else {
@@ -91,25 +108,18 @@ class AccountSettingsViewController: UIViewController {
     }
     
     private func loadUserData() {
-        let userEmail = Auth.auth().currentUser!.email
-        print(userEmail!)
+        guard let userEmail = Auth.auth().currentUser?.email else { return }
         
         let collection = db.collection("User")
-        
-        collection.whereField("Email", isEqualTo: userEmail!).getDocuments
-        {
-            (querySnapshot, error) in
+        collection.whereField("Email", isEqualTo: userEmail).getDocuments { querySnapshot, error in
             if let error = error {
                 print("Error querying user: \(error.localizedDescription)")
-            } else if let documents = querySnapshot?.documents, !documents.isEmpty {
-                let userDoc = documents[0]
+            } else if let documents = querySnapshot?.documents, let userDoc = documents.first {
+                self.userDocumentID = userDoc.documentID
                 let data = userDoc.data()
                 
-                let uni = data["University"] as! String
-                let user = data["Username"] as! String
-                
-                self.displayNameTextField.text = user
-                self.institutionTextField.text = uni
+                self.displayNameTextField.text = data["Username"] as? String
+                self.institutionTextField.text = data["University"] as? String
             }
         }
     }

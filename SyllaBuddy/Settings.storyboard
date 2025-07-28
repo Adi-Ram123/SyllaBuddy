@@ -156,7 +156,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="Kpa-lt-N1O">
-                                <rect key="frame" x="0.0" y="168" width="440" height="460"/>
+                                <rect key="frame" x="0.0" y="168" width="440" height="380"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="9IC-J8-LTp">
                                         <rect key="frame" x="20" y="20" width="400" height="130"/>
@@ -193,7 +193,7 @@
                                                             </attributedString>
                                                         </buttonConfiguration>
                                                         <connections>
-                                                            <action selector="saveThemeTapped:" destination="vTW-vq-Wz3" eventType="touchUpInside" id="THh-nj-Ebw"/>
+                                                            <action selector="saveThemeTapped:" destination="vTW-vq-Wz3" eventType="touchUpInside" id="NQn-r3-CQz"/>
                                                         </connections>
                                                     </button>
                                                 </subviews>
@@ -239,7 +239,7 @@
                                                             </attributedString>
                                                         </buttonConfiguration>
                                                         <connections>
-                                                            <action selector="saveFontTapped:" destination="vTW-vq-Wz3" eventType="touchUpInside" id="4xC-cB-0zn"/>
+                                                            <action selector="saveFontTapped:" destination="vTW-vq-Wz3" eventType="touchUpInside" id="swP-Tm-pM8"/>
                                                         </connections>
                                                     </button>
                                                 </subviews>
@@ -250,27 +250,8 @@
                                             </stackView>
                                         </subviews>
                                     </stackView>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lFf-ob-E4L">
-                                        <rect key="frame" x="20" y="280" width="400" height="80"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="80" id="Prz-6Z-rfr"/>
-                                        </constraints>
-                                        <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="plain">
-                                            <attributedString key="attributedTitle">
-                                                <fragment content="Link to Calendar">
-                                                    <attributes>
-                                                        <font key="NSFont" metaFont="system" size="16"/>
-                                                    </attributes>
-                                                </fragment>
-                                            </attributedString>
-                                        </buttonConfiguration>
-                                        <connections>
-                                            <action selector="linkToCalendarTapped:" destination="vTW-vq-Wz3" eventType="touchUpInside" id="Uqh-O8-hfC"/>
-                                        </connections>
-                                    </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jpx-sU-biD">
-                                        <rect key="frame" x="20" y="360" width="400" height="80"/>
+                                        <rect key="frame" x="20" y="280" width="400" height="80"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="80" id="Htv-x3-D9D"/>
                                         </constraints>
@@ -298,11 +279,10 @@
                     </view>
                     <navigationItem key="navigationItem" id="pEF-Z1-yL5"/>
                     <connections>
-                        <outlet property="fontSaveButton" destination="HYj-Lz-4TZ" id="dHj-EL-Xrv"/>
+                        <outlet property="fontSaveButton" destination="HYj-Lz-4TZ" id="xNE-8a-N3a"/>
                         <outlet property="fontTextField" destination="2Ly-Dn-QAc" id="i2M-0a-GnM"/>
-                        <outlet property="linkCalendarButton" destination="lFf-ob-E4L" id="EWq-2T-CZw"/>
                         <outlet property="logoutButton" destination="jpx-sU-biD" id="ZrP-SI-AwG"/>
-                        <outlet property="themeSaveButton" destination="p18-ul-OUJ" id="KpR-sN-6gg"/>
+                        <outlet property="themeSaveButton" destination="p18-ul-OUJ" id="uKC-ju-tnM"/>
                         <outlet property="themeTextField" destination="nOT-dc-H9H" id="Y3w-uO-2K9"/>
                     </connections>
                 </viewController>
@@ -319,7 +299,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="uI5-VI-gZZ">
-                                <rect key="frame" x="0.0" y="168" width="440" height="460"/>
+                                <rect key="frame" x="0.0" y="168" width="440" height="610"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="rhb-82-xII">
                                         <rect key="frame" x="20" y="20" width="400" height="100"/>
@@ -336,25 +316,12 @@
                                             <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="4ur-VB-c6W">
                                                 <rect key="frame" x="0.0" y="40" width="400" height="60"/>
                                                 <subviews>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Email" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8o7-8G-2Wq">
-                                                        <rect key="frame" x="0.0" y="20.333333333333343" width="39" height="19.333333333333329"/>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Email: (email)" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8o7-8G-2Wq">
+                                                        <rect key="frame" x="0.0" y="20.333333333333343" width="400" height="19.333333333333329"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                         <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="leading" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EDx-jI-s87">
-                                                        <rect key="frame" x="190" y="13.333333333333343" width="210" height="33.333333333333336"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="width" constant="210" id="oHl-Xn-Pa9"/>
-                                                        </constraints>
-                                                        <state key="normal" title="Button"/>
-                                                        <buttonConfiguration key="configuration" style="plain" title="Email (Tap to Reveal)">
-                                                            <fontDescription key="titleFontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="16"/>
-                                                        </buttonConfiguration>
-                                                        <connections>
-                                                            <action selector="revealEmailTapped:" destination="WCy-8E-CMV" eventType="touchUpInside" id="1Nq-gg-NKi"/>
-                                                        </connections>
-                                                    </button>
                                                 </subviews>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="60" id="a2G-C1-82K"/>
@@ -362,35 +329,60 @@
                                             </stackView>
                                         </subviews>
                                     </stackView>
-                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="eDD-i7-sSi">
-                                        <rect key="frame" x="20" y="120" width="400" height="60"/>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="xhK-BE-tZA">
+                                        <rect key="frame" x="20" y="120" width="400" height="210"/>
                                         <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Password" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fur-ZT-Uyq">
-                                                <rect key="frame" x="0.0" y="20.333333333333314" width="70" height="19.333333333333329"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Change Password" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xgy-0Z-BlX">
+                                                <rect key="frame" x="0.0" y="0.0" width="400" height="40"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="40" id="ul9-DM-eIA"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="leading" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="v3w-uZ-wIU">
-                                                <rect key="frame" x="190" y="13.333333333333314" width="210" height="33.333333333333336"/>
+                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="center" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="trj-eM-8TQ">
+                                                <rect key="frame" x="0.0" y="40" width="400" height="170"/>
+                                                <subviews>
+                                                    <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="New Password" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="gc7-oy-ZsF">
+                                                        <rect key="frame" x="20" y="0.0" width="360" height="40"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="40" id="Ty0-VD-sT4"/>
+                                                        </constraints>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                        <textInputTraits key="textInputTraits"/>
+                                                    </textField>
+                                                    <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Confirm New Password" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="xeV-3w-83F">
+                                                        <rect key="frame" x="20" y="60" width="360" height="40"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="40" id="qxs-bD-FbY"/>
+                                                        </constraints>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                        <textInputTraits key="textInputTraits"/>
+                                                    </textField>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2r8-Ug-uXc">
+                                                        <rect key="frame" x="169.66666666666666" y="120" width="61" height="50"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="50" id="dla-dl-Rya"/>
+                                                        </constraints>
+                                                        <state key="normal" title="Button"/>
+                                                        <buttonConfiguration key="configuration" style="plain" title="Save"/>
+                                                        <connections>
+                                                            <action selector="changePasswordTapped:" destination="WCy-8E-CMV" eventType="touchUpInside" id="rBx-Wp-qne"/>
+                                                        </connections>
+                                                    </button>
+                                                </subviews>
                                                 <constraints>
-                                                    <constraint firstAttribute="width" constant="210" id="jLS-cH-qUs"/>
+                                                    <constraint firstAttribute="trailing" secondItem="xeV-3w-83F" secondAttribute="trailing" constant="20" id="I7V-8y-kox"/>
+                                                    <constraint firstItem="gc7-oy-ZsF" firstAttribute="leading" secondItem="trj-eM-8TQ" secondAttribute="leading" constant="20" id="S5q-6V-izg"/>
+                                                    <constraint firstAttribute="trailing" secondItem="gc7-oy-ZsF" secondAttribute="trailing" constant="20" id="kZ2-ck-VlI"/>
+                                                    <constraint firstItem="xeV-3w-83F" firstAttribute="leading" secondItem="trj-eM-8TQ" secondAttribute="leading" constant="20" id="wLa-6c-lmy"/>
                                                 </constraints>
-                                                <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="plain" title="Password (Tap to Reveal)">
-                                                    <fontDescription key="titleFontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="16"/>
-                                                </buttonConfiguration>
-                                                <connections>
-                                                    <action selector="revealPasswordTapped:" destination="WCy-8E-CMV" eventType="touchUpInside" id="UYL-HZ-9Qc"/>
-                                                </connections>
-                                            </button>
+                                            </stackView>
                                         </subviews>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="60" id="XaE-hn-25s"/>
-                                        </constraints>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="oIj-ZA-Qsc">
-                                        <rect key="frame" x="20" y="180" width="400" height="130"/>
+                                        <rect key="frame" x="20" y="330" width="400" height="130"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Display Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YLW-Dg-9hI">
                                                 <rect key="frame" x="0.0" y="0.0" width="400" height="40"/>
@@ -432,7 +424,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="K1i-oD-bCg">
-                                        <rect key="frame" x="20" y="310" width="400" height="130"/>
+                                        <rect key="frame" x="20" y="460" width="400" height="130"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Institution" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EJ9-pv-q7w">
                                                 <rect key="frame" x="0.0" y="0.0" width="400" height="40"/>
@@ -487,14 +479,14 @@
                     </view>
                     <navigationItem key="navigationItem" id="H7u-UZ-rH7"/>
                     <connections>
+                        <outlet property="changePasswordSaveButton" destination="2r8-Ug-uXc" id="OJv-KL-YUI"/>
+                        <outlet property="confirmPasswordTextField" destination="xeV-3w-83F" id="IBX-sz-41P"/>
                         <outlet property="displayNameSaveButton" destination="SGq-fQ-jXz" id="w7V-OC-iWK"/>
                         <outlet property="displayNameTextField" destination="Irg-Qq-mCL" id="NkD-sa-qRS"/>
-                        <outlet property="emailLabel" destination="8o7-8G-2Wq" id="om4-I7-gqZ"/>
+                        <outlet property="emailLabel" destination="8o7-8G-2Wq" id="urV-OX-E7p"/>
                         <outlet property="institutionSaveButton" destination="eyb-wC-DAx" id="GJY-WL-Ilg"/>
                         <outlet property="institutionTextField" destination="rkf-hB-meP" id="Rra-rw-cbL"/>
-                        <outlet property="passwordLabel" destination="fur-ZT-Uyq" id="EbD-wv-bND"/>
-                        <outlet property="revealEmailButton" destination="EDx-jI-s87" id="lBj-Ac-dJ9"/>
-                        <outlet property="revealPasswordButton" destination="v3w-uZ-wIU" id="hk1-gF-j9L"/>
+                        <outlet property="newPasswordTextField" destination="gc7-oy-ZsF" id="fk2-Ii-03b"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="OPt-DX-Jeb" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

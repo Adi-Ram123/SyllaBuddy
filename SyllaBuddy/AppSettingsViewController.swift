@@ -7,25 +7,23 @@
 
 import UIKit
 import FirebaseAuth
-import EventKit
 
 class AppSettingsViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UITextFieldDelegate {
 
     @IBOutlet weak var themeTextField: UITextField!
-    @IBOutlet weak var themeSaveButton: UIButton!
     @IBOutlet weak var fontTextField: UITextField!
-    @IBOutlet weak var fontSaveButton: UIButton!
-    @IBOutlet weak var linkCalendarButton: UIButton!
     @IBOutlet weak var logoutButton: UIButton!
     
-    private let themes = ["Default", "Dark", "Light", "Blue", "Green"]
-    private let fonts = ["System", "Times New Roman", "Courier New"]
-    private var selectedTheme: String = "Default"
-    private var selectedFont: String = "System"
+    @IBOutlet weak var themeSaveButton: UIButton!      // Save Theme Button
+    @IBOutlet weak var fontSaveButton: UIButton!       // Save Font Button
+    
+    private let themes = AppTheme.allCases.map { $0.rawValue }
+    private let fonts = AppFont.allCases.map { $0.rawValue }
+    private var selectedTheme: String = AppTheme.default.rawValue
+    private var selectedFont: String = AppFont.system.rawValue
     
     private var themePicker = UIPickerView()
     private var fontPicker = UIPickerView()
-    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -38,9 +36,9 @@ class AppSettingsViewController: UIViewController, UIPickerViewDelegate, UIPicke
         
         setupPickers()
         loadSavedPreferences()
-        // Do any additional setup after loading the view.
     }
     
+    // MARK: - Picker Setup
     private func setupPickers() {
         themePicker.delegate = self
         themePicker.dataSource = self
@@ -64,9 +62,9 @@ class AppSettingsViewController: UIViewController, UIPickerViewDelegate, UIPicke
     
     @objc private func doneTapped() {
         view.endEditing(true)
-        ThemeManager.shared.applyTheme(to: self)
     }
     
+    // MARK: - PickerView DataSource/Delegate
     func numberOfComponents(in pickerView: UIPickerView) -> Int { 1 }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
@@ -87,6 +85,28 @@ class AppSettingsViewController: UIViewController, UIPickerViewDelegate, UIPicke
         }
     }
     
+    @IBAction func saveThemeTapped(_ sender: Any) {
+        if let theme = AppTheme(rawValue: selectedTheme) {
+            ThemeManager.shared.updateTheme(theme)
+            ThemeManager.shared.applyTheme(to: self)  // Apply theme colors
+            ThemeManager.shared.applyFont(to: self.view) // Reapply font
+            ThemeManager.shared.applyFontToNavigationBar(for: self)
+            ThemeManager.shared.applyFontToTabBarItems()
+        }
+        showAlert(title: "Theme Saved", message: "App theme has been updated.")
+    }
+
+    @IBAction func saveFontTapped(_ sender: Any) {
+        if let font = AppFont(rawValue: selectedFont) {
+            ThemeManager.shared.updateFont(font)
+            ThemeManager.shared.applyFont(to: self.view)  // Reapply font
+            ThemeManager.shared.applyFontToNavigationBar(for: self)
+            ThemeManager.shared.applyFontToTabBarItems()
+        }
+        showAlert(title: "Font Saved", message: "Font style has been updated.")
+    }
+    
+    // MARK: - Load Preferences
     private func loadSavedPreferences() {
         if let savedTheme = UserDefaults.standard.string(forKey: "appTheme") {
             selectedTheme = savedTheme
@@ -103,60 +123,8 @@ class AppSettingsViewController: UIViewController, UIPickerViewDelegate, UIPicke
             }
         }
     }
-    
-    @IBAction func saveThemeTapped(_ sender: Any) {
-        if let theme = AppTheme(rawValue: selectedTheme) {
-            // Save theme and update ThemeManager
-            ThemeManager.shared.updateTheme(theme)
-            // Apply the theme to the current screen only
-            ThemeManager.shared.applyTheme(to: self)
-        }
-        showAlert(title: "Theme Saved", message: "App theme has been updated.")
-    }
-    
-    @IBAction func saveFontTapped(_ sender: Any) {
-        if let font = AppFont(rawValue: selectedFont) {
-            ThemeManager.shared.updateFont(font)
-            
-            // Apply font immediately
-            ThemeManager.shared.applyFont(to: self.view)
-        }
-        showAlert(title: "Font Saved", message: "Font style has been updated.")
-    }
 
-
-    @IBAction func linkToCalendarTapped(_ sender: Any) {
-        let eventStore = EKEventStore()
-
-        // Request access to the Calendar
-        eventStore.requestAccess(to: .event) { granted, error in
-            DispatchQueue.main.async {
-                if let error = error {
-                    self.showAlert(title: "Error", message: "Failed to access calendar: \(error.localizedDescription)")
-                    return
-                }
-                
-                if granted {
-                    // placeholder
-                    let event = EKEvent(eventStore: eventStore)
-                    event.title = "SyllaBuddy Event"
-                    event.startDate = Date().addingTimeInterval(3600)
-                    event.endDate = Date().addingTimeInterval(7200)
-                    event.calendar = eventStore.defaultCalendarForNewEvents
-
-                    do {
-                        try eventStore.save(event, span: .thisEvent)
-                        self.showAlert(title: "Success", message: "Event added to your calendar.")
-                    } catch {
-                        self.showAlert(title: "Error", message: "Could not save event: \(error.localizedDescription)")
-                    }
-                } else {
-                    self.showAlert(title: "Permission Denied", message: "Calendar access is required to link events.")
-                }
-            }
-        }
-    }
-
+    // MARK: - Logout
     @IBAction func logoutTapped(_ sender: Any) {
         do {
             try Auth.auth().signOut()
@@ -167,12 +135,10 @@ class AppSettingsViewController: UIViewController, UIPickerViewDelegate, UIPicke
         }
     }
     
+    // MARK: - Helper Alert
     private func showAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
-            // Re-apply font after alert dismisses
-            ThemeManager.shared.applyFont(to: self.view)
-        }))
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
     }
 }

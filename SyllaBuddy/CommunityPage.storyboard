@@ -55,18 +55,46 @@
                                             <constraint firstAttribute="height" constant="100" id="cj0-cL-9ca"/>
                                         </constraints>
                                         <items>
-                                            <barButtonItem title="Calendar" id="jL0-pg-rD5">
-                                                <connections>
-                                                    <segue destination="3EE-O6-eGP" kind="show" id="rJ2-hf-PN5"/>
-                                                </connections>
-                                            </barButtonItem>
-                                            <barButtonItem style="plain" systemItem="flexibleSpace" id="hje-T0-Ofv"/>
-                                            <barButtonItem title="Community" id="6Pt-ak-jw3"/>
-                                            <barButtonItem style="plain" systemItem="flexibleSpace" id="w3k-kA-PxD"/>
-                                            <barButtonItem title="Settings" id="OFe-qr-9lJ">
-                                                <connections>
-                                                    <segue destination="3yb-JT-flR" kind="show" id="VbI-LS-qg2"/>
-                                                </connections>
+                                            <barButtonItem style="plain" id="GQL-u8-scc">
+                                                <view key="customView" contentMode="scaleToFill" id="bif-7Y-ntO">
+                                                    <rect key="frame" x="16" y="1" width="361" height="98"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <subviews>
+                                                        <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="Nkk-cA-vTC">
+                                                            <rect key="frame" x="0.0" y="0.0" width="361" height="98"/>
+                                                            <subviews>
+                                                                <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qGv-Of-0Jm">
+                                                                    <rect key="frame" x="0.0" y="0.0" width="124" height="98"/>
+                                                                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                                    <state key="normal" image="calendar" backgroundImage="calendar"/>
+                                                                    <connections>
+                                                                        <segue destination="3EE-O6-eGP" kind="show" id="WxW-hM-klk"/>
+                                                                    </connections>
+                                                                </button>
+                                                                <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KbM-T7-vfg">
+                                                                    <rect key="frame" x="124" y="0.0" width="118.66666666666669" height="98"/>
+                                                                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                                    <state key="normal" image="community selected" backgroundImage="community selected"/>
+                                                                </button>
+                                                                <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DJY-Ch-OBP">
+                                                                    <rect key="frame" x="242.66666666666666" y="0.0" width="118.33333333333334" height="98"/>
+                                                                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                                    <state key="normal" image="settings" backgroundImage="settings"/>
+                                                                    <connections>
+                                                                        <segue destination="3yb-JT-flR" kind="show" id="wVz-CQ-g1H"/>
+                                                                    </connections>
+                                                                </button>
+                                                            </subviews>
+                                                        </stackView>
+                                                    </subviews>
+                                                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                    <constraints>
+                                                        <constraint firstItem="Nkk-cA-vTC" firstAttribute="leading" secondItem="bif-7Y-ntO" secondAttribute="leadingMargin" id="Bog-Hr-qDd"/>
+                                                        <constraint firstAttribute="bottomMargin" secondItem="Nkk-cA-vTC" secondAttribute="bottom" id="DFL-Un-gQG"/>
+                                                        <constraint firstAttribute="trailingMargin" secondItem="Nkk-cA-vTC" secondAttribute="trailing" id="Jdi-YX-Vru"/>
+                                                        <constraint firstItem="Nkk-cA-vTC" firstAttribute="top" secondItem="bif-7Y-ntO" secondAttribute="topMargin" id="M4K-7S-ovM"/>
+                                                    </constraints>
+                                                </view>
                                             </barButtonItem>
                                         </items>
                                     </toolbar>
@@ -175,7 +203,10 @@
         </scene>
     </scenes>
     <resources>
+        <image name="calendar" width="156" height="140"/>
+        <image name="community selected" width="149" height="140"/>
         <image name="line.3.horizontal.decrease.circle" catalog="system" width="128" height="123"/>
+        <image name="settings" width="149" height="140"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
