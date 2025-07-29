@@ -12,6 +12,7 @@ import FirebaseFirestore
 import FirebaseAuth
 import EventKit
 import Vision
+import AVFoundation
 
 // Structs to organize json file for parsing
 struct OpenAIResponse: Codable {
@@ -275,7 +276,7 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
             self.manualAddEventOption()
         })
         sheet.addAction(UIAlertAction(title: "Upload PDF", style: .default) { _ in
-            self.pdfUpload()
+            self.fileUpload()
         })
         sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         
@@ -371,16 +372,16 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
         present(alert, animated: true)
     }
     
-    // Get the pdf selection from user
-    func pdfUpload() {
-        let supportedTypes: [UTType] = [UTType.pdf]
+    // Get the doc selection from user
+    func fileUpload() {
+        let supportedTypes: [UTType] = [UTType.pdf, UTType.jpeg, UTType.png, UTType.movie, UTType.mpeg4Movie]
         let picker = UIDocumentPickerViewController(forOpeningContentTypes: supportedTypes, asCopy: true)
         picker.delegate = self
         picker.allowsMultipleSelection = false
         present(picker, animated: true)
     }
     
-    // Select the PDF and call API to generate the events
+    // Select document and parse in OpenAI API.
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         
         pdfList = [Event]()
@@ -452,8 +453,101 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
             } else {
                 print("Couldn't load image.")
             }
+        } else if ["mov", "mp4"].contains(fileExtension) {
+            extractFramesFromVideo(url: selectedURL) { frames in
+                self.extractTextFromFrames(frames) { extractedText in
+                    self.handleSyllabusText(extractedText)
+                }
+            }
         } else {
             print("Unsupported file type.")
+        }
+    }
+    
+    func extractFramesFromVideo(url: URL, completion: @escaping ([CGImage]) -> Void) {
+        Task {
+            let asset = AVURLAsset(url: url)
+            do {
+                let duration = try await asset.load(.duration)
+                let generator = AVAssetImageGenerator(asset: asset)
+                generator.appliesPreferredTrackTransform = true
+                
+                let durationSeconds = CMTimeGetSeconds(duration)
+                let interval: TimeInterval = 1.0
+                let times = stride(from: 0.0, to: durationSeconds, by: interval).map {
+                    NSValue(time: CMTime(seconds: $0, preferredTimescale: 600))
+                }
+                
+                var frames: [CGImage] = []
+                var completed = 0
+                generator.generateCGImagesAsynchronously(forTimes: times) { _, image, _, _, _ in
+                    if let image = image {
+                        frames.append(image)
+                    }
+                    completed += 1
+                    if completed == times.count {
+                        DispatchQueue.main.async {
+                            completion(frames)
+                        }
+                    }
+                }
+            } catch {
+                print("Failed to load duration: ", error)
+                DispatchQueue.main.async {
+                    completion([])
+                }
+            }
+        }
+    }
+    
+    func extractTextFromFrames(_ images: [CGImage], completion: @escaping (String) -> Void) {
+        var allText = ""
+        let dispatchGroup = DispatchGroup()
+        
+        for cgImage in images {
+            dispatchGroup.enter()
+            let request = VNRecognizeTextRequest { request, error in
+                for observation in request.results as? [VNRecognizedTextObservation] ?? [] {
+                    if let topCandidate = observation.topCandidates(1).first {
+                        allText += topCandidate.string + "\n"
+                    }
+                }
+                dispatchGroup.leave()
+            }
+            request.recognitionLevel = .accurate
+            let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+            try? handler.perform([request])
+        }
+        
+        dispatchGroup.notify(queue: .main) {
+            completion(allText)
+        }
+    }
+    
+    func handleSyllabusText(_ text: String) {
+        self.callChatGPT(with: text) { result in
+            switch result {
+            case .success(let gptResponse):
+                if gptResponse.events.isEmpty {
+                    DispatchQueue.main.async {
+                        self.makePopup(popupTitle: "Syllabus Error", popupMessage: "No events found.")
+                    }
+                    return
+                }
+                
+                let course = gptResponse.course
+                for event in gptResponse.events {
+                    let newEvent = Event(date: event.date, event: event.event, eventClass: course)
+                    self.pdfList.append(newEvent)
+                }
+                DispatchQueue.main.async {
+                    self.performSegue(withIdentifier: self.confirmSegue, sender: self)
+                }
+            case .failure(_):
+                DispatchQueue.main.async {
+                    self.makePopup(popupTitle: "OpenAI Error", popupMessage: "Failed to parse syllabus.")
+                }
+            }
         }
     }
     
@@ -467,6 +561,11 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
         request.addValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM-dd-YYYY"
+        let currentDate = formatter.string(from: Date())
+        let currentYear = Calendar.current.component(.year, from: Date())
+        
         // Prompt
         let prompt = """
         Extract the course number (like CS 371L) and all assignments, exams, and major deadlines from the following syllabus text.
@@ -479,6 +578,10 @@ class CalendarEventView: UIViewController, UIDocumentPickerDelegate, UITableView
         - If the exact month or year of an event is unclear, assume the current month and year based on today's date.
         - If only a day is mentioned (e.g., "Project due on 15th"), format it as MM-dd-YYYY using today's month and year.
         - The "eventClass" field in each event should be set to the same string as the top-level "course".
+        
+        **Important Clarification**
+        If the year is not explicitly mentioned in the syllabus, always assume it is**\(currentYear). Do not defualt to 2023 or 2024. Use **\(currentYear)** as the correct year for all date formats.
+        Ignore events like “assigned,” “posted,” or “announced” unless they are associated with a due date.
 
         
         Example:
