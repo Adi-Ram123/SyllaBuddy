@@ -31,7 +31,6 @@ class EventViewController: UIViewController, UITableViewDelegate, UITableViewDat
         tableView.dataSource = self
         className = eventList[0].eventClass
         eventFound.text = "\(eventList.count) events found in \(className)"
-
         // Do any additional setup after loading the view.
     }
     
@@ -86,6 +85,9 @@ class EventViewController: UIViewController, UITableViewDelegate, UITableViewDat
             eventList.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
             eventFound.text = "\(eventList.count) events found in \(className)"
+            if(eventList.count == 0) {
+                self.dismiss(animated: true, completion: nil)
+            }
         }
     }
     
